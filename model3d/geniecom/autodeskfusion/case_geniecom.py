@@ -52,6 +52,7 @@ under_h = 3.5           # espaço livre sob a PCB
 
 # --- Case ---
 wall = 2.4              # parede lateral
+db9_protrusion = 0.3    # a moldura do DB9 sai 0,3 mm além da face da case: nenhum mm de encaixe é perdido, mesmo com a folga da PCB (-0,2 a +0,17 mm)
 end_wall = 1.6          # parede frontal/traseira (a moldura do DB9 e a face do NES ficam rentes à face externa)
 floor_t = 2.0           # fundo da base
 roof_t = 2.0            # teto da tampa
@@ -78,13 +79,13 @@ tongue_w = 1.0          # largura da lingueta
 tongue_h = 1.6          # altura da lingueta
 tongue_clear = 0.2      # folga da ranhura
 support_w = 3.0         # tamanho dos blocos de apoio da PCB
-hold_gap = 0.15         # folga entre os pilares da tampa e o topo da PCB
+hold_gap = 0.6          # folga entre os pilares das orelhas do NES e o topo da PCB (a PCB não encosta neles)
 
 # ============================================================
 # DERIVADOS
 # ============================================================
 cav_hw = max(pcb_w, db9_body_w) / 2 + side_gap          # meia-largura da cavidade
-cav_y0 = end_wall                                       # parede interna frontal (lado DB9)
+cav_y0 = db9_protrusion + end_wall                      # parede interna frontal (lado DB9)
 cav_y1 = nes_front - end_wall                           # parede interna traseira (lado NES)
 cav_r = 0.3
 screw_x = cav_hw + 3.0                                  # posição X dos parafusos (±), fora da cavidade
@@ -97,7 +98,7 @@ cav_top = pcb_top + max(nes_h, db9_h) + top_gap
 total_h = cav_top + roof_t
 
 out_hw = cav_hw + wall
-out_y0 = 0.0                                            # face externa frontal = face da moldura do DB9
+out_y0 = db9_protrusion                                 # face externa frontal (a moldura do DB9, em y = 0, sai db9_protrusion além dela)
 out_y1 = nes_front                                      # face externa traseira = face do NES
 zc = pcb_top + db9_axis_h                               # altura do eixo da carcaça D (só para o teste de interferência)
 
@@ -152,10 +153,8 @@ base = base.union(t_out.cut(t_in))
 # apoios da PCB (sob a placa, nas bordas laterais, longe de pinos e parafusos)
 sx_in = cav_hw - support_w                      # blocos encostam na parede lateral
 supports_y = [
-    (0.0, support_w),                           # lado DB9 (a PCB começa em y = 0)
+    (out_y0, out_y0 + support_w),               # lado DB9 (a PCB começa em y = 0)
     (pcb_l - support_w, pcb_l),                 # lado NES
-    (14.0, 17.0),                               # meio
-    (25.5, 28.5),                               # meio
 ]
 for s in (-1, 1):
     for (y0, y1) in supports_y:
@@ -186,12 +185,6 @@ g_out = box(-cav_hw - tongue_w - tongue_clear, cav_hw + tongue_w + tongue_clear,
             split_z - 1, split_z + tongue_h + 0.3, cav_r + tongue_w + tongue_clear)
 g_in = box(-cav_hw, cav_hw, cav_y0, cav_y1, split_z - 2, split_z + tongue_h + 1, cav_r)
 lid = lid.cut(g_out.cut(g_in))
-
-# pilares que seguram a PCB contra os apoios da base (só na região do meio)
-for s in (-1, 1):
-    for (y0, y1) in supports_y[2:]:
-        xa, xb = sorted((s * sx_in, s * cav_hw))
-        lid = lid.union(box(xa, xb, y0, y1, pcb_top + hold_gap, cav_top + 0.01))
 
 # pilares junto às orelhas do NES: travam a PCB contra sair pela frente
 for s in (-1, 1):

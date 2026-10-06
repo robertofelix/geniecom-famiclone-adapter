@@ -218,12 +218,12 @@ Case sob medida para a [PCB do Geniecom](#pcb-gerber) montada (PCB, DB9 e conect
 ### Características
 
 - Medidas dos conectores tiradas do layout da PCB ([hardware/easyeda/geniecom_pcb.json](hardware/easyeda/geniecom_pcb.json)).
-- A PCB fica apoiada em blocos na base, com batente traseiro, e é presa por pilares da tampa. Dois pilares junto às orelhas do conector NES impedem a PCB de sair pela frente quando se desconecta o plugue.
-- A borda da PCB e a moldura do DB9 ficam rentes à face frontal; uma parede de 1,6 mm da base, abaixo da PCB, fecha o vão do fundo.
+- A PCB fica apoiada em quatro blocos pequenos nos cantos da base (dois na frente e dois atrás), com batente traseiro. Não há pilares apertando a PCB: a tampa só tem dois pilares junto às orelhas do conector NES, a 0,6 mm de distância da placa, que impedem a PCB de sair pela frente quando se desconecta o plugue.
+- Nenhum milímetro de encaixe é perdido no lado do DB9: a carcaça D sai inteira (6 mm) e a moldura do DB9 sai 0,3 mm além da face frontal da case, o que cobre a folga de posição da PCB (a moldura pode ficar entre 0,13 e 0,5 mm para fora, nunca para dentro). Uma parede de 1,6 mm da base, abaixo da PCB, fecha o vão do fundo.
 - Folga sob a PCB para os pinos soldados e as cabeças dos parafusos do DB9.
 - Lingueta e ranhura alinham base e tampa.
 - Quatro parafusos **M3 autorroscantes de cabeça escareada** (kit Zmbroll): a cabeça fica embutida no fundo da base e o parafuso rosqueia em furos-piloto de 2,5 mm na tampa. Use **M3×16 mm**. Os parafusos ficam em "ombros" nas laterais, entre os dois conectores, o que leva a largura externa a 47 mm.
-- Dimensões externas: cerca de 47 × 44,8 × 24,5 mm. A cavidade tem 33,9 mm de largura para acomodar o flange metálico do DB9 (33,15 mm).
+- Dimensões externas: cerca de 47 × 44,5 × 24,5 mm. A cavidade tem 33,9 mm de largura para acomodar o flange metálico do DB9 (33,15 mm).
 
 ### Impressão
 
