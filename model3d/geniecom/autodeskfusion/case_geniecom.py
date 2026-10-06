@@ -32,19 +32,19 @@ pcb_l = 40.3            # comprimento (Y)
 pcb_t = 1.6             # espessura (padrão JLCPCB)
 
 # --- Conector DB9 fêmea ângulo reto (footprint do EasyEDA) ---
-db9_body_w = 31.1       # largura do corpo/flange (X)
+db9_body_w = 33.15      # largura do flange metálico do DB9 (X)  (MEDIDO com paquímetro: 33,15 mm)
 db9_body_d = 12.5       # profundidade do corpo sobre a PCB (Y, de 0 a 12.5)
-db9_h = 12.5            # altura do corpo acima da PCB  (ESTIMADO, padrão DE-9 = 12,5)
+db9_h = 12.5            # altura do corpo acima da PCB (medido 14,03 com a PCB, menos 1,6 = 12,4; arredondado p/ cima)
 db9_shell_out = 6.0     # quanto a carcaça D + porcas de trava saem além da borda da PCB
-db9_axis_h = 6.3        # altura do eixo da carcaça D acima da PCB (ESTIMADO)
+db9_axis_h = 5.9        # altura do eixo da carcaça D acima da PCB (MEDIDO: borda de baixo 2,68 e de cima 9,1 -> centro 5,9)
 db9_screw_x = 12.5      # posição X dos parafusos de fixação do DB9 (±)
 db9_screw_y = 9.5       # posição Y dos parafusos de fixação do DB9
 
 # --- Conector NES 7 pinos (footprint do EasyEDA) ---
-nes_body_w = 24.8       # largura do corpo (X)
+nes_body_w = 24.8       # largura do corpo (X)  (medido 24,92)
 nes_body_y0 = 30.6      # início do corpo (Y)
 nes_body_d = 14.0       # profundidade do corpo (Y); a face frontal fica em y = 44,6
-nes_h = 15.0            # altura do corpo acima da PCB  (ESTIMADO - MEÇA!)
+nes_h = 15.0            # altura do corpo acima da PCB (medido ~16,4 com a PCB, menos 1,6 = 14,8; arredondado p/ cima)
 
 # --- Por baixo da PCB (pinos soldados + cabeças dos parafusos do DB9) ---
 under_h = 3.5           # espaço livre sob a PCB
@@ -74,9 +74,7 @@ screw_clear_d = 3.4     # furo passante na base
 screw_head_d = 6.4      # diâmetro do escareado (cabeça M3 escareada ~ 5,5-6,0)
 screw_pilot_d = 2.5     # furo-piloto na tampa (autorroscante)
 screw_pilot_depth = 9.5 # profundidade do furo-piloto
-screw_x = 18.9          # posição X dos parafusos (±), fora da cavidade
 screw_ys = (17.1, 26.1) # posições Y (região livre entre os dois conectores)
-pod_outer_x = 22.5      # borda externa dos "ombros" que abrigam os parafusos
 pod_r = 2.0
 
 # --- Encaixe base/tampa e apoio da PCB ---
@@ -94,6 +92,8 @@ cav_y0 = -(db9_shell_out + end_gap)                     # parede interna frontal
 nes_front = nes_body_y0 + nes_body_d
 cav_y1 = nes_front + end_gap                            # parede interna traseira (lado NES)
 cav_r = 1.0
+screw_x = cav_hw + 3.0                                  # posição X dos parafusos (±), fora da cavidade
+pod_outer_x = screw_x + 3.6                             # borda externa dos "ombros" dos parafusos
 
 pcb_bot = floor_t + under_h                             # z da face de baixo da PCB
 pcb_top = pcb_bot + pcb_t                               # z da face de cima da PCB
@@ -233,12 +233,12 @@ envelopes = {
     "DB9 carcaca+porcas": box(-db9_screw_x - 2.1, db9_screw_x + 2.1, -db9_shell_out, 0,
                               zc - 4.5, zc + 4.5),
     "NES corpo": box(-nes_body_w / 2, nes_body_w / 2, nes_body_y0, nes_front, pcb_top, pcb_top + nes_h),
-    "NES orelhas": box(-15.1, 15.1, 39.3, 41.4, pcb_top, pcb_top + 8),
+    "NES orelhas": box(-15.1, 15.1, pcb_l - 1.0, pcb_l + 1.1, pcb_top, pcb_top + 8),
     "pinos sob PCB": box(-9, 9, 6, 28, pcb_bot - 2.0, pcb_bot),
     "parafusos DB9 sob PCB": cyl(-db9_screw_x, db9_screw_y, pcb_bot - 2.5, pcb_bot, 6.0)
     .union(cyl(db9_screw_x, db9_screw_y, pcb_bot - 2.5, pcb_bot, 6.0)),
-    "pegs NES sob PCB": cyl(-10.25, 37.7, pcb_bot - 2.5, pcb_bot, 2.4)
-    .union(cyl(10.25, 37.7, pcb_bot - 2.5, pcb_bot, 2.4)),
+    "pegs NES sob PCB": cyl(-10.25, pcb_l - 2.6, pcb_bot - 2.5, pcb_bot, 2.4)
+    .union(cyl(10.25, pcb_l - 2.6, pcb_bot - 2.5, pcb_bot, 2.4)),
 }
 print("--- interferência (mm3, esperado ~0) ---")
 worst = 0.0

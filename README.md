@@ -11,6 +11,7 @@ Documentação da pinagem do controle de famiclones vendidos no Brasil e projeto
 - [Correlação Geniecom ↔ NES](#correlação-geniecom--nes)
 - [Montando o adaptador](#montando-o-adaptador)
 - [PCB (Gerber)](#pcb-gerber)
+- [Case para impressão 3D](#case-para-impressão-3d)
 - [Bônus: outros clones](#bônus-outros-clones)
   - [Phantom System, Top Game e Turbo Game](#phantom-system-top-game-e-turbo-game)
 - [Estrutura do repositório](#estrutura-do-repositório)
@@ -192,6 +193,57 @@ A placa chegou e foi montada com os dois conectores.
 | ![Conector DB9 fêmea da PCB](docs/img/jpg/pcb_montada_conector_db9.jpg) | ![Conector NES de 7 pinos da PCB](docs/img/jpg/pcb_montada_conector_nes.jpg) |
 | Conector DB9 fêmea, que encaixa no Geniecom. | Conector NES de 7 pinos, que recebe o controle ou o Retro Receiver. |
 
+## Case para impressão 3D
+
+Case sob medida para a [PCB do Geniecom](#pcb-gerber) montada (PCB, DB9 e conector NES soldados), sem nada exposto: só ficam à mostra a boca do DB9 e a do NES. São duas peças, base e tampa, geradas por script (CadQuery) e exportadas em STL e STEP. Para o Phantom System, Top Game e Turbo Game, veja a [case do Phantom](#case-para-impressão-3d-do-phantom-system-top-game-e-turbo-game).
+
+> **Status:** modelo validado só por geometria (malhas fechadas e teste de interferência com os envelopes dos conectores). Ainda não foi impresso nem testado com a PCB.
+
+![Pré-visualização da case: vistas montada, base, tampa e corte longitudinal](model3d/geniecom/stl/preview.png)
+
+| Arquivo | Descrição |
+| --- | --- |
+| [model3d/geniecom/stl/case_base.stl](model3d/geniecom/stl/case_base.stl) | Base, pronta para imprimir (fundo na mesa) |
+| [model3d/geniecom/stl/case_lid.stl](model3d/geniecom/stl/case_lid.stl) | Tampa, já virada para imprimir (teto na mesa) |
+| [model3d/geniecom/stl/case_assembly.stl](model3d/geniecom/stl/case_assembly.stl) | Conjunto montado, só para conferência visual |
+| [model3d/geniecom/autodeskfusion/case_geniecom.py](model3d/geniecom/autodeskfusion/case_geniecom.py) | Script paramétrico (CadQuery) que gera todos os arquivos |
+| [model3d/geniecom/autodeskfusion/case_base.step](model3d/geniecom/autodeskfusion/case_base.step), [case_lid.step](model3d/geniecom/autodeskfusion/case_lid.step), [case_assembly.step](model3d/geniecom/autodeskfusion/case_assembly.step) | Para importar no Autodesk Fusion (*Inserir > Inserir arquivo STEP*); a geometria vem editável, sem histórico paramétrico |
+
+### Características
+
+- Medidas dos conectores tiradas do layout da PCB ([hardware/easyeda/geniecom_pcb.json](hardware/easyeda/geniecom_pcb.json)).
+- A PCB fica apoiada em blocos na base, com batentes que impedem de deslizar, e é presa por pilares da tampa.
+- Folga sob a PCB para os pinos soldados e as cabeças dos parafusos do DB9.
+- Lingueta e ranhura alinham base e tampa.
+- Quatro parafusos **M3 autorroscantes de cabeça escareada** (kit Zmbroll): a cabeça fica embutida no fundo da base e o parafuso rosqueia em furos-piloto de 2,5 mm na tampa. Use **M3×16 mm**. Os parafusos ficam em "ombros" nas laterais, entre os dois conectores, o que leva a largura externa a 47 mm.
+- Dimensões externas: cerca de 47 × 54 × 24,5 mm. A cavidade tem 33,9 mm de largura para acomodar o flange metálico do DB9 (33,15 mm).
+
+### Impressão
+
+PLA, camada de 0,2 mm, 3 paredes, sem suporte. Os STLs já estão na orientação de impressão. Folgas pensadas para FDM com bico de 0,4 mm; ajuste os parâmetros do script para outra impressora.
+
+### Medidas a conferir
+
+As larguras e alturas dos conectores foram conferidas com paquímetro (as medidas do NES e do DB9 são as mesmas no Geniecom e no Phantom). Já com todas as medidas conferidas:
+
+| Parâmetro | Valor | Observação |
+| --- | --- | --- |
+| `nes_h` | 15,0 mm | Medido: 16,4 mm com a PCB, ou 14,8 mm acima dela; arredondado para cima. Define a altura total da case |
+| `db9_h` | 12,5 mm | Medido: 14,03 mm com a PCB, ou 12,4 mm acima dela; arredondado para cima |
+| `db9_body_w` | 33,15 mm | Medido: largura do flange metálico do DB9 |
+| `db9_axis_h` | 5,9 mm | Medido: borda de baixo da abertura a 2,68 mm e a de cima a 9,1 mm do plano da PCB; o centro fica em 5,9 mm. Posiciona a abertura do DB9 |
+
+Também vale testar o encaixe: a abertura em D do DB9 (19 × 10,4 mm) foi dimensionada só pelo layout, e a ponta do DB9 fica recuada cerca de 1,8 mm da face externa. Se o plugue macho do console não chegar fundo, reduza `end_wall` ou aumente `db9_shell_out`.
+
+### Regenerar
+
+```bash
+pip install cadquery
+python model3d/geniecom/autodeskfusion/case_geniecom.py
+```
+
+O script reescreve os STL e STEP e imprime o resultado do teste de interferência.
+
 ## Bônus: outros clones
 
 Pinagem dos demais clones que consegui coletar:
@@ -234,7 +286,16 @@ No mesmo projeto do EasyEDA, montei uma segunda PCB com a pinagem do Phantom Sys
 
 ![Layout da PCB do adaptador NES para Phantom System no EasyEDA, mostrando o conector NES de 7 pinos à esquerda ligado ao conector DB9 do Phantom System à direita](docs/img/png/phantom_pcb_layout.png)
 
-Esta PCB ainda não foi fabricada ou montada; os arquivos acima estão prontos para quem quiser produzi-la.
+##### PCB montada
+
+A placa foi fabricada e montada com os dois conectores. Na serigrafia aparece "TURBO GAME NINTENDO" e as setas indicam o sentido de cada lado.
+
+| | |
+| --- | --- |
+| ![PCB do Phantom montada, vista geral, com a serigrafia "Turbo Game Nintendo"](docs/img/jpg/phantom_pcb_montada_vista_geral.jpg) | ![PCB montada, verso, com os terminais soldados e os parafusos do DB9](docs/img/jpg/phantom_pcb_montada_verso.jpg) |
+| Vista geral: conector DB9 (lado do console) e conector NES. | Verso da placa, com os terminais dos conectores. |
+| ![Conector DB9 fêmea da PCB, de frente](docs/img/jpg/phantom_pcb_montada_conector_db9.jpg) | ![Conector NES de 7 pinos da PCB, de frente](docs/img/jpg/phantom_pcb_montada_conector_nes.jpg) |
+| Conector DB9 fêmea, que encaixa no console. Atrás dele aparecem os pinos do NES. | Conector NES de 7 pinos, que recebe o controle ou o Retro Receiver. |
 
 ##### Lista de materiais
 
@@ -242,6 +303,21 @@ Esta PCB ainda não foi fabricada ou montada; os arquivos acima estão prontos p
 | --- | --- | --- | --- |
 | NES | Conector de controle NES, 7 pinos fêmea, ângulo reto | 1 | [AliExpress](https://www.aliexpress.com/item/32828024202.html) |
 | PHANTOM | Conector DB9 fêmea, ângulo reto | 1 | [AliExpress](https://www.aliexpress.com/item/4001214300548.html) |
+
+#### Case para impressão 3D do Phantom System, Top Game e Turbo Game
+
+A case segue o mesmo projeto da [case do Geniecom](#case-para-impressão-3d), com as medidas da PCB do Phantom (35,8 × 31,2 mm, mais curta que a do Geniecom). Os conectores são os mesmos, então a abertura do DB9, a do NES e os parafusos M3×16 não mudam. Dimensões externas: cerca de 47 × 50 × 24,5 mm. As [medidas a conferir](#medidas-a-conferir) e as dicas de impressão valem igualmente aqui. A PCB já está montada (veja as [fotos](#pcb-montada-1)), mas a case ainda não foi impressa nem testada com ela.
+
+| Arquivo | Descrição |
+| --- | --- |
+| [model3d/phantom/stl/case_base.stl](model3d/phantom/stl/case_base.stl) | Base, pronta para imprimir (fundo na mesa) |
+| [model3d/phantom/stl/case_lid.stl](model3d/phantom/stl/case_lid.stl) | Tampa, já virada para imprimir (teto na mesa) |
+| [model3d/phantom/stl/case_assembly.stl](model3d/phantom/stl/case_assembly.stl) | Conjunto montado, só para conferência visual |
+| [model3d/phantom/stl/preview.png](model3d/phantom/stl/preview.png) | Pré-visualização |
+| [model3d/phantom/autodeskfusion/case_phantom.py](model3d/phantom/autodeskfusion/case_phantom.py) | Script paramétrico (CadQuery) |
+| [model3d/phantom/autodeskfusion/case_base.step](model3d/phantom/autodeskfusion/case_base.step), [case_lid.step](model3d/phantom/autodeskfusion/case_lid.step), [case_assembly.step](model3d/phantom/autodeskfusion/case_assembly.step) | Para importar no Autodesk Fusion |
+
+Para regenerar: `python model3d/phantom/autodeskfusion/case_phantom.py`.
 
 ## Estrutura do repositório
 
@@ -257,6 +333,19 @@ Esta PCB ainda não foi fabricada ou montada; os arquivos acima estão prontos p
 │       ├── png/               # Diagramas de pinagem e ligação (usados no README)
 │       └── svg/               # Fontes vetoriais (editáveis) dos diagramas
 │           └── phantom_sch.svg    # Visualização do esquemático do Phantom System (exportado do EasyEDA)
+├── model3d/                   # Cases para impressão 3D
+│   ├── geniecom/
+│   │   ├── autodeskfusion/
+│   │   │   ├── case_geniecom.py   # Script paramétrico (CadQuery) da case
+│   │   │   └── case_*.step        # Base, tampa e conjunto, para importar no Fusion
+│   │   └── stl/
+│   │       ├── case_base.stl      # Base (orientação de impressão)
+│   │       ├── case_lid.stl       # Tampa (orientação de impressão)
+│   │       ├── case_assembly.stl  # Conjunto montado
+│   │       └── preview.png        # Pré-visualização
+│   └── phantom/               # Mesma organização, para o Phantom System, Top Game e Turbo Game
+│       ├── autodeskfusion/    # case_phantom.py e case_*.step
+│       └── stl/               # case_*.stl e preview.png
 └── hardware/
     ├── gerber_geniecom.zip    # Arquivos Gerber da PCB do Geniecom
     ├── gerber_phantom.zip     # Arquivos Gerber da PCB do Phantom System
