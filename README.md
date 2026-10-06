@@ -209,6 +209,12 @@ Case sob medida para a [PCB do Geniecom](#pcb-gerber) montada (PCB, DB9 e conect
 | [model3d/geniecom/autodeskfusion/case_geniecom.py](model3d/geniecom/autodeskfusion/case_geniecom.py) | Script paramétrico (CadQuery) que gera todos os arquivos |
 | [model3d/geniecom/autodeskfusion/case_base.step](model3d/geniecom/autodeskfusion/case_base.step), [case_lid.step](model3d/geniecom/autodeskfusion/case_lid.step), [case_assembly.step](model3d/geniecom/autodeskfusion/case_assembly.step) | Para importar no Autodesk Fusion (*Inserir > Inserir arquivo STEP*); a geometria vem editável, sem histórico paramétrico |
 
+### Material necessário
+
+- Impressão 3D: `case_base.stl` e `case_lid.stl` (não imprima o `case_assembly.stl`, que é só para visualização).
+- Parafusos: **4 × M3×16 mm**, autorroscantes, de cabeça escareada, colocados pelo fundo da base.
+- A PCB já montada, com o DB9 e o conector NES soldados.
+
 ### Características
 
 - Medidas dos conectores tiradas do layout da PCB ([hardware/easyeda/geniecom_pcb.json](hardware/easyeda/geniecom_pcb.json)).
