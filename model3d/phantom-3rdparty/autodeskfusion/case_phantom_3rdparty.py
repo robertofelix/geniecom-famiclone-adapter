@@ -1,6 +1,6 @@
 """
-Case sob medida para a PCB do adaptador NES -> Phantom System / Top Game / Turbo Game
-(hardware/gerber_phantom.zip).
+Case sob medida para um adaptador NES -> Phantom System / Top Game / Turbo Game COMPRADO
+PRONTO (Mercado Livre). NÃO é a PCB deste repositório: veja o README desta pasta.
 
 Gera (CadQuery):
   ../stl/case_base.stl       base, orientada para impressão (fundo na mesa)
@@ -8,16 +8,15 @@ Gera (CadQuery):
   ../stl/case_assembly.stl   conjunto montado (só para conferência visual)
   case_base.step, case_lid.step, case_assembly.step   (importar no Fusion)
 
-Uso:  pip install cadquery   &&   python case_phantom.py
+Uso:  pip install cadquery   &&   python case_phantom_3rdparty.py
 
 Sistema de coordenadas do modelo (mm):
   X = largura (dimensão de 31 mm da PCB), 0 = centro da PCB
   Y = comprimento, 0 = borda da PCB do lado do DB9, +Y aponta para o NES
   Z = altura, 0 = fundo externo da base
 
-Todas as dimensões dos conectores vêm do layout em hardware/easyeda/phantom_pcb.json
-(unidade do EasyEDA: 1 = 0,254 mm). Itens marcados "ESTIMADO" não estão no arquivo
-e devem ser conferidos com paquímetro nos seus conectores.
+Medidas dos conectores: paquímetro. Medidas da PCB do adaptador (largura e comprimento):
+ESTIMADAS a partir de uma foto, pois não há arquivo de layout. Itens "ESTIMADO" devem ser conferidos.
 """
 import math
 import os
@@ -27,9 +26,9 @@ import cadquery as cq
 # ============================================================
 # PARÂMETROS - edite aqui
 # ============================================================
-# --- PCB (phantom_pcb.json, camada BoardOutLine) ---
-pcb_w = 31.2            # largura (X)
-pcb_l = 35.8            # comprimento (Y)
+# --- PCB do adaptador de terceiros (sem layout; ESTIMADA pela foto) ---
+pcb_w = 32.0            # largura (X)  ESTIMADO (foto: ~31,5)
+pcb_l = 38.6            # comprimento (Y)  ESTIMADO: face do NES (42,96) menos o balanço do NES (4,36)
 pcb_t = 1.6             # espessura (padrão JLCPCB)
 
 # --- Conector DB9 fêmea ângulo reto (footprint do EasyEDA) ---
@@ -44,7 +43,7 @@ db9_screw_y = 9.5       # posição Y dos parafusos de fixação do DB9
 # --- Conector NES 7 pinos (footprint do EasyEDA) ---
 nes_body_w = 24.9       # largura do corpo com a moldura (X)  (MEDIDO: 24,88 a 24,92)
 nes_body_d = 14.0       # profundidade do corpo (Y)
-nes_front = pcb_l + 4.36  # face do DB9 até a face do NES, pelo layout do Phantom (35,8 + 4,36 = 40,16); NÃO medido
+nes_front = 42.96       # distância da face da moldura do DB9 até a face do NES (MEDIDO neste adaptador: 42,96)
 nes_body_y0 = nes_front - nes_body_d  # início do corpo (Y)
 nes_h = 15.0            # altura do corpo acima da PCB (medido ~16,4 com a PCB, menos 1,6 = 14,8; arredondado p/ cima)
 
@@ -197,7 +196,7 @@ for s in (-1, 1):
 # pilares junto às orelhas do NES: travam a PCB contra sair pela frente
 for s in (-1, 1):
     xa, xb = sorted((s * (nes_body_w / 2 + 0.2), s * cav_hw))
-    lid = lid.union(box(xa, xb, pcb_l - 3.5, pcb_l - 1.2, pcb_top + hold_gap, cav_top + 0.01))
+    lid = lid.union(box(xa, xb, nes_front - 8.8, nes_front - 5.5, pcb_top + hold_gap, cav_top + 0.01))
 
 # furos-piloto dos parafusos
 for s in (-1, 1):
@@ -229,7 +228,7 @@ envelopes = {
     "DB9 carcaca+porcas (fora da case)": box(-db9_screw_x - 2.1, db9_screw_x + 2.1, -db9_shell_out, 0,
                               zc - 4.5, zc + 4.5),
     "NES corpo": box(-nes_body_w / 2, nes_body_w / 2, nes_body_y0, nes_front, pcb_top, pcb_top + nes_h),
-    "NES orelhas": box(-15.1, 15.1, pcb_l - 1.0, pcb_l + 1.1, pcb_top, pcb_top + 8),
+    "NES orelhas": box(-15.1, 15.1, nes_front - 5.32, nes_front - 3.22, pcb_top, pcb_top + 8),
     "pinos sob PCB": box(-9, 9, 6, 28, pcb_bot - 2.0, pcb_bot),
     "parafusos DB9 sob PCB": cyl(-db9_screw_x, db9_screw_y, pcb_bot - 2.5, pcb_bot, 6.0)
     .union(cyl(db9_screw_x, db9_screw_y, pcb_bot - 2.5, pcb_bot, 6.0)),

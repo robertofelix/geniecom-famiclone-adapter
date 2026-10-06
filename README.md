@@ -195,7 +195,7 @@ A placa chegou e foi montada com os dois conectores.
 
 ## Case para impressão 3D
 
-Case sob medida para a [PCB do Geniecom](#pcb-gerber) montada (PCB, DB9 e conector NES soldados), sem nada exposto: só ficam à mostra a boca do DB9 e a do NES. São duas peças, base e tampa, geradas por script (CadQuery) e exportadas em STL e STEP. Para o Phantom System, Top Game e Turbo Game, veja a [case do Phantom](#case-para-impressão-3d-do-phantom-system-top-game-e-turbo-game).
+Case sob medida para a [PCB do Geniecom](#pcb-gerber) montada (PCB, DB9 e conector NES soldados), sem nada exposto: a moldura do DB9 e o corpo do NES atravessam a parede da case e ficam com a face rente à face externa, então a carcaça D do DB9 sai inteira (encaixe completo no console) e o plugue do controle entra direto no NES. São duas peças, base e tampa, geradas por script (CadQuery) e exportadas em STL e STEP. Para o Phantom System, Top Game e Turbo Game, veja a [case do Phantom](#case-para-impressão-3d-do-phantom-system-top-game-e-turbo-game).
 
 > **Status:** modelo validado só por geometria (malhas fechadas e teste de interferência com os envelopes dos conectores). Ainda não foi impresso nem testado com a PCB.
 
@@ -218,11 +218,12 @@ Case sob medida para a [PCB do Geniecom](#pcb-gerber) montada (PCB, DB9 e conect
 ### Características
 
 - Medidas dos conectores tiradas do layout da PCB ([hardware/easyeda/geniecom_pcb.json](hardware/easyeda/geniecom_pcb.json)).
-- A PCB fica apoiada em blocos na base, com batentes que impedem de deslizar, e é presa por pilares da tampa.
+- A PCB fica apoiada em blocos na base, com batente traseiro, e é presa por pilares da tampa. Dois pilares junto às orelhas do conector NES impedem a PCB de sair pela frente quando se desconecta o plugue.
+- A borda da PCB e a moldura do DB9 ficam rentes à face frontal; uma parede de 1,6 mm da base, abaixo da PCB, fecha o vão do fundo.
 - Folga sob a PCB para os pinos soldados e as cabeças dos parafusos do DB9.
 - Lingueta e ranhura alinham base e tampa.
 - Quatro parafusos **M3 autorroscantes de cabeça escareada** (kit Zmbroll): a cabeça fica embutida no fundo da base e o parafuso rosqueia em furos-piloto de 2,5 mm na tampa. Use **M3×16 mm**. Os parafusos ficam em "ombros" nas laterais, entre os dois conectores, o que leva a largura externa a 47 mm.
-- Dimensões externas: cerca de 47 × 54 × 24,5 mm. A cavidade tem 33,9 mm de largura para acomodar o flange metálico do DB9 (33,15 mm).
+- Dimensões externas: cerca de 47 × 44,8 × 24,5 mm. A cavidade tem 33,9 mm de largura para acomodar o flange metálico do DB9 (33,15 mm).
 
 ### Impressão
 
@@ -237,9 +238,11 @@ As larguras e alturas dos conectores foram conferidas com paquímetro (as medida
 | `nes_h` | 15,0 mm | Medido: 16,4 mm com a PCB, ou 14,8 mm acima dela; arredondado para cima. Define a altura total da case |
 | `db9_h` | 12,5 mm | Medido: 14,03 mm com a PCB, ou 12,4 mm acima dela; arredondado para cima |
 | `db9_body_w` | 33,15 mm | Medido: largura do flange metálico do DB9 |
-| `db9_axis_h` | 5,9 mm | Medido: borda de baixo da abertura a 2,68 mm e a de cima a 9,1 mm do plano da PCB; o centro fica em 5,9 mm. Posiciona a abertura do DB9 |
+| `db9_axis_h` | 5,9 mm | Medido: borda de baixo da abertura a 2,68 mm e a de cima a 9,1 mm do plano da PCB; o centro fica em 5,9 mm. Só entra na checagem de interferência |
+| `nes_body_w` | 24,9 mm | Medido: largura do conector NES com a moldura (24,88 a 24,92). A janela da case tem 0,25 mm de folga de cada lado |
+| `nes_front` | 44,79 mm | Medido na PCB do Geniecom montada: distância da face da moldura do DB9 até a face do NES (o layout dá 44,62 mm). No Phantom o valor vem do layout (40,16 mm) |
 
-Também vale testar o encaixe: a abertura em D do DB9 (19 × 10,4 mm) foi dimensionada só pelo layout, e a ponta do DB9 fica recuada cerca de 1,8 mm da face externa. Se o plugue macho do console não chegar fundo, reduza `end_wall` ou aumente `db9_shell_out`.
+Também vale testar o encaixe: a janela do DB9 (33,4 mm de largura) e a do NES (25,4 × 15,4 mm) seguem as medidas acima. Se alguma peça não entrar, aumente `window_clear` (folga ao redor das janelas).
 
 ### Regenerar
 
@@ -292,15 +295,17 @@ No mesmo projeto do EasyEDA, montei uma segunda PCB com a pinagem do Phantom Sys
 
 ![Layout da PCB do adaptador NES para Phantom System no EasyEDA, mostrando o conector NES de 7 pinos à esquerda ligado ao conector DB9 do Phantom System à direita](docs/img/png/phantom_pcb_layout.png)
 
-##### PCB montada
+Esta PCB ainda não foi fabricada ou montada; os arquivos acima estão prontos para quem quiser produzi-la.
 
-A placa foi fabricada e montada com os dois conectores. Na serigrafia aparece "TURBO GAME NINTENDO" e as setas indicam o sentido de cada lado.
+##### Adaptador montado (ilustração)
+
+Fotos de um adaptador NES para Phantom System, Top Game e Turbo Game já montado, a título de ilustração do resultado: PCB com o conector DB9 fêmea e o conector NES de 7 pinos.
 
 | | |
 | --- | --- |
-| ![PCB do Phantom montada, vista geral, com a serigrafia "Turbo Game Nintendo"](docs/img/jpg/phantom_pcb_montada_vista_geral.jpg) | ![PCB montada, verso, com os terminais soldados e os parafusos do DB9](docs/img/jpg/phantom_pcb_montada_verso.jpg) |
+| ![Adaptador montado, vista geral, com a serigrafia "Turbo Game Nintendo"](docs/img/jpg/phantom_adaptador_vista_geral.jpg) | ![Adaptador montado, verso, com os terminais soldados e os parafusos do DB9](docs/img/jpg/phantom_adaptador_verso.jpg) |
 | Vista geral: conector DB9 (lado do console) e conector NES. | Verso da placa, com os terminais dos conectores. |
-| ![Conector DB9 fêmea da PCB, de frente](docs/img/jpg/phantom_pcb_montada_conector_db9.jpg) | ![Conector NES de 7 pinos da PCB, de frente](docs/img/jpg/phantom_pcb_montada_conector_nes.jpg) |
+| ![Conector DB9 fêmea do adaptador, de frente](docs/img/jpg/phantom_adaptador_conector_db9.jpg) | ![Conector NES de 7 pinos do adaptador, de frente](docs/img/jpg/phantom_adaptador_conector_nes.jpg) |
 | Conector DB9 fêmea, que encaixa no console. Atrás dele aparecem os pinos do NES. | Conector NES de 7 pinos, que recebe o controle ou o Retro Receiver. |
 
 ##### Lista de materiais
@@ -312,7 +317,7 @@ A placa foi fabricada e montada com os dois conectores. Na serigrafia aparece "T
 
 #### Case para impressão 3D do Phantom System, Top Game e Turbo Game
 
-A case segue o mesmo projeto da [case do Geniecom](#case-para-impressão-3d), com as medidas da PCB do Phantom (35,8 × 31,2 mm, mais curta que a do Geniecom). Os conectores são os mesmos, então a abertura do DB9, a do NES e os parafusos M3×16 não mudam. Dimensões externas: cerca de 47 × 50 × 24,5 mm. As [medidas a conferir](#medidas-a-conferir) e as dicas de impressão valem igualmente aqui. A PCB já está montada (veja as [fotos](#pcb-montada-1)), mas a case ainda não foi impressa nem testada com ela.
+A case segue o mesmo projeto da [case do Geniecom](#case-para-impressão-3d), com as medidas da PCB do Phantom (35,8 × 31,2 mm, mais curta que a do Geniecom). Os conectores são os mesmos, então as janelas do DB9 e do NES e os parafusos M3×16 não mudam. Dimensões externas: cerca de 47 × 40,2 × 24,5 mm. A distância entre a moldura do DB9 e a face do NES (40,16 mm) vem do layout da PCB do Phantom e ainda não foi conferida com paquímetro. As [medidas a conferir](#medidas-a-conferir) e as dicas de impressão valem igualmente aqui. Como a PCB ainda não foi fabricada, a case também não foi testada.
 
 | Arquivo | Descrição |
 | --- | --- |

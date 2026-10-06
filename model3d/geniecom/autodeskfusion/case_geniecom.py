@@ -41,9 +41,10 @@ db9_screw_x = 12.5      # posição X dos parafusos de fixação do DB9 (±)
 db9_screw_y = 9.5       # posição Y dos parafusos de fixação do DB9
 
 # --- Conector NES 7 pinos (footprint do EasyEDA) ---
-nes_body_w = 24.8       # largura do corpo (X)  (medido 24,92)
-nes_body_y0 = 30.6      # início do corpo (Y)
-nes_body_d = 14.0       # profundidade do corpo (Y); a face frontal fica em y = 44,6
+nes_body_w = 24.9       # largura do corpo com a moldura (X)  (MEDIDO: 24,88 a 24,92)
+nes_body_d = 14.0       # profundidade do corpo (Y)
+nes_front = 44.79       # distância da face da moldura do DB9 até a face do NES (MEDIDO na PCB montada: 44,79; layout: 44,62)
+nes_body_y0 = nes_front - nes_body_d  # início do corpo (Y)
 nes_h = 15.0            # altura do corpo acima da PCB (medido ~16,4 com a PCB, menos 1,6 = 14,8; arredondado p/ cima)
 
 # --- Por baixo da PCB (pinos soldados + cabeças dos parafusos do DB9) ---
@@ -51,23 +52,18 @@ under_h = 3.5           # espaço livre sob a PCB
 
 # --- Case ---
 wall = 2.4              # parede lateral
-end_wall = 1.6          # parede frontal/traseira (fina para o plugue chegar fundo)
+end_wall = 1.6          # parede frontal/traseira (a moldura do DB9 e a face do NES ficam rentes à face externa)
 floor_t = 2.0           # fundo da base
 roof_t = 2.0            # teto da tampa
 side_gap = 0.35         # folga lateral PCB/conectores <-> parede
-end_gap = 0.2           # folga entre as pontas dos conectores e as paredes frontal/traseira
 top_gap = 0.4           # folga acima do conector mais alto
 case_r = 3.0            # raio dos cantos verticais externos
 edge_chamfer = 1.0      # chanfro das arestas superiores
 base_chamfer = 0.8      # chanfro do fundo (evita "pé de elefante")
 
-# --- Aberturas ---
-db9_open_w = 19.0       # largura de cima da abertura em D (cabe o plugue macho do console)
-db9_open_h = 10.4       # altura da abertura em D
-db9_open_r = 1.0        # raio dos cantos
-nes_open_w = 22.6       # largura da abertura do NES
-nes_open_h = 13.4       # altura da abertura do NES
-nes_open_r = 2.0
+# --- Janelas: moldura do DB9 e face do NES ficam rentes às faces da case ---
+window_clear = 0.25     # folga ao redor da moldura do DB9 e do corpo do NES
+pcb_slot_clear = 0.2    # folga do rasgo da PCB na parede frontal
 
 # --- Parafusos M3 autorroscantes, cabeça escareada (kit Zmbroll) ---
 screw_clear_d = 3.4     # furo passante na base
@@ -88,10 +84,9 @@ hold_gap = 0.15         # folga entre os pilares da tampa e o topo da PCB
 # DERIVADOS
 # ============================================================
 cav_hw = max(pcb_w, db9_body_w) / 2 + side_gap          # meia-largura da cavidade
-cav_y0 = -(db9_shell_out + end_gap)                     # parede interna frontal (lado DB9)
-nes_front = nes_body_y0 + nes_body_d
-cav_y1 = nes_front + end_gap                            # parede interna traseira (lado NES)
-cav_r = 1.0
+cav_y0 = end_wall                                       # parede interna frontal (lado DB9)
+cav_y1 = nes_front - end_wall                           # parede interna traseira (lado NES)
+cav_r = 0.3
 screw_x = cav_hw + 3.0                                  # posição X dos parafusos (±), fora da cavidade
 pod_outer_x = screw_x + 3.6                             # borda externa dos "ombros" dos parafusos
 
@@ -102,8 +97,9 @@ cav_top = pcb_top + max(nes_h, db9_h) + top_gap
 total_h = cav_top + roof_t
 
 out_hw = cav_hw + wall
-out_y0 = cav_y0 - end_wall
-out_y1 = cav_y1 + end_wall
+out_y0 = 0.0                                            # face externa frontal = face da moldura do DB9
+out_y1 = nes_front                                      # face externa traseira = face do NES
+zc = pcb_top + db9_axis_h                               # altura do eixo da carcaça D (só para o teste de interferência)
 
 
 # ============================================================
@@ -165,9 +161,8 @@ for s in (-1, 1):
     for (y0, y1) in supports_y:
         xa, xb = sorted((s * sx_in, s * cav_hw))
         base = base.union(box(xa, xb, y0, y1, floor_t - 0.01, pcb_bot))
-    # batentes frontal e traseiro (impedem a PCB de deslizar em Y)
+    # batente traseiro (a PCB não escorrega para dentro quando se encaixa o plugue)
     xa, xb = sorted((s * sx_in, s * cav_hw))
-    base = base.union(box(xa, xb, -1.2, 0.0, floor_t - 0.01, pcb_top))
     base = base.union(box(xa, xb, pcb_l, pcb_l + 1.2, floor_t - 0.01, pcb_top))
 
 # furos dos parafusos: passante + escareado (90 graus) a partir do fundo
@@ -198,31 +193,31 @@ for s in (-1, 1):
         xa, xb = sorted((s * sx_in, s * cav_hw))
         lid = lid.union(box(xa, xb, y0, y1, pcb_top + hold_gap, cav_top + 0.01))
 
+# pilares junto às orelhas do NES: travam a PCB contra sair pela frente
+for s in (-1, 1):
+    xa, xb = sorted((s * (nes_body_w / 2 + 0.2), s * cav_hw))
+    lid = lid.union(box(xa, xb, pcb_l - 3.5, pcb_l - 1.2, pcb_top + hold_gap, cav_top + 0.01))
+
 # furos-piloto dos parafusos
 for s in (-1, 1):
     for y in screw_ys:
         lid = lid.cut(cyl(s * screw_x, y, split_z - 0.5, split_z + screw_pilot_depth, screw_pilot_d))
 
-# --- Abertura em D do DB9 (parede frontal) ---
-zc = pcb_top + db9_axis_h
-tilt = math.tan(math.radians(10))
-wb = db9_open_w - 2 * db9_open_h * tilt
-db9_cut = (cq.Workplane("XZ", origin=(0, cav_y0 + 0.01, 0))
-           .polyline([(-db9_open_w / 2, zc + db9_open_h / 2), (db9_open_w / 2, zc + db9_open_h / 2),
-                      (wb / 2, zc - db9_open_h / 2), (-wb / 2, zc - db9_open_h / 2)]).close()
-           .extrude(end_wall + 1.0))              # XZ extruda para -Y (para fora)
-db9_cut = db9_cut.edges("|Y").fillet(db9_open_r)
-lid = lid.cut(db9_cut)
-
-# --- Abertura do NES (parede traseira) ---
-zn = pcb_top + nes_h / 2
-nes_cut = (cq.Workplane("XZ", origin=(0, cav_y1 + end_wall + 1.0, 0))
-           .center(0, zn).rect(nes_open_w, nes_open_h).extrude(end_wall + 1.01))  # para -Y
-nes_cut = nes_cut.edges("|Y").fillet(nes_open_r)
-lid = lid.cut(nes_cut)
-
-# a lingueta da base não pode invadir as aberturas
-base = base.cut(db9_cut).cut(nes_cut)
+# --- Janelas ---
+# DB9: a moldura entra na parede frontal e fica com a face rente à face da case;
+#      a carcaça D sai inteira para fora (encaixe completo no console).
+y_f0, y_f1 = out_y0 - 1.0, cav_y0 + 0.01
+pcb_slot = box(-(pcb_w / 2 + pcb_slot_clear), pcb_w / 2 + pcb_slot_clear, y_f0, y_f1,
+               pcb_bot - pcb_slot_clear, split_z + 0.01)
+db9_win = box(-(db9_body_w / 2 + window_clear), db9_body_w / 2 + window_clear, y_f0, y_f1,
+              split_z, pcb_top + db9_h + window_clear)
+# NES: o corpo do conector atravessa a parede traseira, com a face rente à face da case.
+y_b0, y_b1 = cav_y1 - 0.01, out_y1 + 1.0
+nes_win = box(-(nes_body_w / 2 + window_clear), nes_body_w / 2 + window_clear, y_b0, y_b1,
+              split_z, pcb_top + nes_h + window_clear)
+for w in (pcb_slot, db9_win, nes_win):
+    base = base.cut(w)
+    lid = lid.cut(w)
 
 # ============================================================
 # VERIFICAÇÃO DE INTERFERÊNCIA com os envelopes dos componentes
@@ -230,7 +225,7 @@ base = base.cut(db9_cut).cut(nes_cut)
 envelopes = {
     "PCB": box(-pcb_w / 2, pcb_w / 2, 0, pcb_l, pcb_bot, pcb_top),
     "DB9 corpo": box(-db9_body_w / 2, db9_body_w / 2, 0, db9_body_d, pcb_top, pcb_top + db9_h),
-    "DB9 carcaca+porcas": box(-db9_screw_x - 2.1, db9_screw_x + 2.1, -db9_shell_out, 0,
+    "DB9 carcaca+porcas (fora da case)": box(-db9_screw_x - 2.1, db9_screw_x + 2.1, -db9_shell_out, 0,
                               zc - 4.5, zc + 4.5),
     "NES corpo": box(-nes_body_w / 2, nes_body_w / 2, nes_body_y0, nes_front, pcb_top, pcb_top + nes_h),
     "NES orelhas": box(-15.1, 15.1, pcb_l - 1.0, pcb_l + 1.1, pcb_top, pcb_top + 8),
@@ -273,5 +268,6 @@ cq.exporters.export(assembly, os.path.join(here, "case_assembly.step"))
 
 bb = assembly.val().BoundingBox()
 print(f"Externo: {bb.xlen:.1f} x {bb.ylen:.1f} x {bb.zlen:.1f} mm (L x C x A)")
+print(f"Face do DB9 -> face do NES: {nes_front:.2f} mm")
 print(f"Cavidade: {2 * cav_hw:.1f} x {cav_y1 - cav_y0:.1f} x {cav_top - floor_t:.1f} mm")
 print(f"Parafuso: M3 x {split_z + screw_pilot_depth - 1.0:.0f} mm (escareado, pela base)")
