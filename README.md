@@ -197,7 +197,7 @@ A placa chegou e foi montada com os dois conectores.
 
 Case sob medida para a [PCB do Geniecom](#pcb-gerber) montada (PCB, DB9 e conector NES soldados), sem nada exposto e sem "alças": é uma caixa de laterais retas. A moldura do DB9 e o corpo do NES atravessam a parede e ficam com a face rente à face externa, então a carcaça D do DB9 sai inteira (encaixe completo no console) e o plugue do controle entra direto no NES. São duas peças: a **casca** (paredes e teto, com as janelas dos conectores) e a **placa do fundo**, que fecha a caixa por baixo. Geradas por script (CadQuery) e exportadas em STL e STEP. Para o Phantom System, Top Game e Turbo Game, veja a [case do Phantom](#case-para-impressão-3d-do-phantom-system-top-game-e-turbo-game).
 
-> **Status:** o modelo passou na checagem de interferência (inclusive entre as duas peças) e as malhas são fechadas. As folgas das janelas do DB9 e do NES foram calibradas com [testes de encaixe impressos](model3d/frame-tests/README.md). Esta versão de fecho (parafusos nos cantos, pelo fundo) ainda não foi impressa.
+> **Status:** a versão anterior desta case foi impressa e validada: molduras do DB9 e do NES, e fecho com 4 parafusos M3×8 mm. Desde então foram acrescentados os batentes das orelhas do NES (a PCB recuava cerca de 1 mm ao encaixar o plugue no DB9) e os nomes gravados no teto, que ainda não foram impressos. O modelo passa na checagem de interferência, inclusive entre as duas peças, e as malhas são fechadas.
 
 ![Pré-visualização da case do Geniecom: fechada pelos dois lados, aberta com a PCB sobre a placa do fundo e vista de cima](model3d/geniecom/stl/preview_render.png)
 
@@ -219,11 +219,12 @@ Case sob medida para a [PCB do Geniecom](#pcb-gerber) montada (PCB, DB9 e conect
 ### Características
 
 - Medidas dos conectores conferidas com paquímetro e com o layout da PCB ([hardware/easyeda/geniecom_pcb.json](hardware/easyeda/geniecom_pcb.json)). Janelas do DB9 e do NES recortadas com a folga validada nos testes de encaixe, e a janela do NES acompanha os cantos boleados do conector (raio de 2 mm).
-- A PCB fica apoiada em quatro blocos pequenos nos cantos da placa do fundo (dois na frente e dois atrás), com batente traseiro. Não há pilares apertando a PCB: a casca só tem dois pilares junto às orelhas do conector NES, a 0,6 mm de distância da placa, que impedem a PCB de sair pela frente quando se desconecta o plugue.
+- A PCB fica apoiada em quatro blocos pequenos nos cantos da placa do fundo (dois na frente e dois atrás). Na casca, quatro peças seguram a PCB no sentido do comprimento: dois pilares na frente e dois batentes atrás das orelhas do conector NES, com 0,15 mm de folga cada, de modo que o empurrão do plugue do joystick no DB9 não desloca a placa. A folga vertical dos pilares sobre a PCB é de 0,1 mm.
 - Nenhum milímetro de encaixe é perdido no lado do DB9: a carcaça D sai inteira (6 mm) e a moldura do DB9 sai 0,3 mm além da face frontal da case, o que cobre a folga de posição da PCB (a moldura pode ficar entre 0,13 e 0,5 mm para fora, nunca para dentro). A parede frontal, abaixo da PCB, é fechada por uma aba da placa do fundo.
 - Espaço de 4,25 mm sob a PCB para os pinos de fixação do NES (3,75 mm), os pinos soldados e as cabeças dos parafusos do DB9.
 - As janelas do DB9 e do NES descem até a placa do fundo, então a casca não tem "ponte" na impressão. As abas da placa tapam o vão sob os conectores (folga de 0,15 mm), e a emenda fica abaixo da PCB, não em volta dos conectores.
 - Quatro parafusos **M3×8 mm autorroscantes de cabeça escareada**, um em cada canto: a cabeça fica embutida no fundo da placa e a haste rosqueia em furos-piloto de 2,6 mm dentro da parede lateral (6,5 mm de espessura, 6 mm de rosca). Os parafusos ficam a 6,5 mm das faces do DB9 e do NES, no eixo da parede.
+- Os nomes **GENIECOM** (perto do DB9) e **NES** (perto do NES) estão gravados no teto, em baixo-relevo de 0,4 mm, com letras de uns 4,5 mm de altura. Cada nome se lê do lado do seu conector: GENIECOM de quem olha pelo lado do DB9 e NES de quem olha pelo lado do NES. A gravação (e não o alto-relevo) é porque a casca imprime com o teto na mesa. A fonte é a negrito padrão do CadQuery; em outra máquina ela pode cair em outra fonte parecida.
 - Dimensões externas: cerca de 44,7 × 44,5 × 26,7 mm (a placa do fundo tem 2 mm). A cavidade tem 31,6 mm de largura (a moldura do DB9 tem 30,95 mm) e 22,7 mm de altura livre.
 
 ### Impressão

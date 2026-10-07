@@ -62,12 +62,17 @@ case_r = 3.0            # raio dos cantos verticais externos
 edge_chamfer = 1.0      # chanfro das arestas superiores
 base_chamfer = 0.8      # chanfro do fundo (evita "pé de elefante")
 
+# --- Texto gravado no teto (baixo-relevo: a casca imprime com o teto na mesa) ---
+label_size = 6.0        # tamanho da fonte (altura das maiúsculas ~4,5 mm)
+label_depth = 0.4       # profundidade da gravação
+label_margin = 8.0      # distância do texto até a face de cada ponta
+
 # --- Janelas: moldura do DB9 e face do NES ficam rentes às faces da case ---
 pcb_slot_clear = 0.1    # folga do rasgo da PCB na parede frontal
 
 # --- Parafusos M3 autorroscantes, cabeça escareada (kit Zmbroll) ---
 screw_clear_d = 3.4     # furo passante na base
-screw_head_d = 4.94     # diâmetro do escareado (cabeça M3 escareada ~ 5,5-6,0)
+screw_head_d = 4.94     # diâmetro da cabeça escareada do M3×8 (medido com paquímetro)
 screw_pilot_d = 2.6     # furo-piloto na casca (autorroscante)
 screw_pilot_depth = 7.0 # profundidade do furo-piloto
 screw_ys = (db9_protrusion + 6.5, nes_front - 6.5) # posições Y (região livre entre os dois conectores)
@@ -75,7 +80,8 @@ pod_r = 2.0
 
 # --- Apoio da PCB ---
 support_w = 3.0         # tamanho dos blocos de apoio da PCB
-hold_gap = 0.6          # folga entre os pilares das orelhas do NES e o topo da PCB (a PCB não encosta neles)
+hold_gap = 0.1          # folga vertical entre os pilares da casca e o topo da PCB
+ear_gap = 0.15         # folga (em Y) entre as orelhas do NES e os batentes da casca (frente e trás)
 
 # ============================================================
 # DERIVADOS
@@ -93,6 +99,7 @@ split_z = floor_t                                       # plano de separação: 
 cav_top = pcb_top + max(nes_h, db9_h) + top_gap
 total_h = cav_top + roof_t
 
+ear_y0, ear_y1 = nes_front - 5.32, nes_front - 3.22     # orelhas do NES (footprint), medidas a partir da face do NES
 out_hw = cav_hw + wall
 out_y0 = db9_protrusion                                 # face externa frontal (a moldura do DB9, em y = 0, sai db9_protrusion além dela)
 out_y1 = nes_front                                      # face externa traseira = face do NES
@@ -165,7 +172,17 @@ lid = outer.intersect(lid_zone).cut(cavity)
 # pilares junto às orelhas do NES: travam a PCB contra sair pela frente
 for s in (-1, 1):
     xa, xb = sorted((s * (nes_body_w / 2 + 0.05), s * cav_hw))
-    lid = lid.union(box(xa, xb, pcb_l - 3.5, pcb_l - 1.2, pcb_top + hold_gap, cav_top + 0.01))
+    lid = lid.union(box(xa, xb, ear_y0 - 2.3, ear_y0 - ear_gap, pcb_top + hold_gap, cav_top + 0.01))
+    # batente traseiro das orelhas: segura a PCB contra o empurrão do plugue do joystick no DB9
+    lid = lid.union(box(xa, xb, ear_y1 + ear_gap, cav_y1 + 0.01, pcb_top + hold_gap, cav_top + 0.01))
+
+# texto gravado no teto: cada nome lê-se do lado do seu conector (GENIECOM do lado do DB9, NES do lado do NES)
+for _txt, _y in (("GENIECOM", out_y0 + label_margin + 2.2), ("NES", out_y1 - label_margin - 2.2)):
+    _t = (cq.Workplane("XY").workplane(offset=total_h - label_depth)
+          .center(0, _y).text(_txt, label_size, label_depth + 0.2, kind="bold", halign="center", valign="center"))
+    if _txt == "NES":
+        _t = _t.rotate((0, _y, 0), (0, _y, 1), 180)   # NES lê-se do lado do seu conector (de cabeça para baixo em relação ao GENIECOM)
+    lid = lid.cut(_t)
 
 # furos-piloto dos parafusos
 for s in (-1, 1):
@@ -213,7 +230,7 @@ envelopes = {
     "DB9 carcaca+porcas (fora da case)": box(-db9_screw_x - 2.1, db9_screw_x + 2.1, -db9_shell_out, 0,
                               zc - 4.5, zc + 4.5),
     "NES corpo": box(-nes_body_w / 2, nes_body_w / 2, nes_body_y0, nes_front, pcb_top, pcb_top + nes_h).edges("|Y").fillet(nes_r),
-    "NES orelhas": box(-15.1, 15.1, pcb_l - 1.0, pcb_l + 1.1, pcb_top, pcb_top + 8),
+    "NES orelhas": box(-15.1, 15.1, ear_y0, ear_y1, pcb_top, pcb_top + 8),
     "pinos sob PCB": box(-9, 9, 6, 28, pcb_bot - 2.0, pcb_bot),
     "parafusos DB9 sob PCB": cyl(-db9_screw_x, db9_screw_y, pcb_bot - 2.5, pcb_bot, 6.0)
     .union(cyl(db9_screw_x, db9_screw_y, pcb_bot - 2.5, pcb_bot, 6.0)),
