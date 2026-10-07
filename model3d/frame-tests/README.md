@@ -11,6 +11,6 @@ Imprima deitado (face de 2 mm na mesa), sem suporte. O número de furinhos redon
 
 Resultado validado: **DB9 com 1 furinho (0,00 mm)** e **NES com 1 furinho (0,05 mm)**. Esses valores estão em `db9_clear` e `nes_clear` dos scripts das cases.
 
-O teste do DB9 vale só para PCBs de 1,25 a 1,26 mm de espessura (Geniecom e Phantom), porque a altura do recorte inclui a PCB. Não vale para o adaptador do `phantom-3rdparty` (1,65 mm).
+O teste do DB9 vale só para PCBs de 1,25 a 1,26 mm de espessura (Geniecom e Phantom), porque a altura do recorte inclui a PCB. Não vale para o adaptador do `phantom-3rdparty` (1,65 mm), que foi validado direto na case impressa, com folga de 0,15 mm.
 
 Para regenerar: `python db9_frame_test.py` e `python nes_frame_test.py` (precisa de `pip install cadquery`).

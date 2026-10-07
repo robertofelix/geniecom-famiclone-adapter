@@ -1,6 +1,6 @@
-# Case para o adaptador Phantom/Top Game/Turbo Game comprado no Mercado Livre
+# Case para o adaptador Phantom/Top Game/Turbo Game comprado na Shopee
 
-> **Este modelo vale apenas para o adaptador de terceiros que foi adquirido no Mercado Livre.** Ele **não** serve para as PCBs deste repositório (Geniecom e Phantom), que têm as próprias cases em [`../geniecom`](../geniecom) e [`../phantom`](../phantom).
+> **Este modelo vale apenas para o adaptador de terceiros que foi adquirido na [Shopee](https://shopee.com.br/).** Ele **não** serve para as PCBs deste repositório (Geniecom e Phantom), que têm as próprias cases em [`../geniecom`](../geniecom) e [`../phantom`](../phantom).
 
 ## O adaptador
 
@@ -29,11 +29,11 @@ A PCB deste adaptador é diferente das do repositório. A distância da face da 
 | `pcb_t` (espessura da PCB) | 1,65 mm | Medido (as PCBs do Geniecom e do Phantom têm 1,26 mm) |
 | `under_h` (espaço sob a PCB) | 4,25 mm | Mesmo valor do Geniecom (confirmado): o que sai por baixo da PCB (pinos de fixação do NES, parafusos do DB9, solda) tem até 3,75 mm, mais 0,5 mm de margem |
 | `nes_clear` (folga da janela do NES) | 0,05 mm | Validada no [teste de encaixe do NES](../frame-tests/README.md) |
-| `db9_clear` (folga da janela do DB9) | 0,15 mm | **Não testada.** O teste de encaixe do DB9 não vale aqui, porque a altura do recorte inclui a PCB e esta é mais grossa |
+| `db9_clear` (folga da janela do DB9) | 0,15 mm | Validada na impressão da case completa. O teste de encaixe do DB9 (0,00 mm) não vale aqui, porque a altura do recorte inclui a PCB e esta é mais grossa |
 | `pcb_w` (largura da PCB) | 32,26 mm | Medido com paquímetro (leitura 32,24 a 32,26 mm) |
 | `pcb_l` (comprimento da PCB) | 37,73 mm | Medido (o NES avança 4,71 mm além da PCB) |
 
-A largura da cavidade (33,0 mm) é definida pela largura da PCB (32,26 mm), que é só 1,31 mm maior que a moldura do DB9 (30,95 mm), ou 0,65 mm de cada lado.
+A largura da cavidade (33,0 mm) é definida pela largura da PCB (32,26 mm), que é só 1,31 mm maior que a moldura do DB9 (30,95 mm), ou 0,65 mm de cada lado. Por isso a janela do DB9 tem um degrau: 32,46 mm de largura na altura da PCB (1,65 mm) e 31,25 mm acima dela. A borda da PCB fica visível nas laterais do conector, e a protusão de 0,3 mm do DB9 foi mantida, sem perder encaixe do plugue. Se a fresta incomodar, dá para vedar com silicone ou epóxi depois de montar.
 
 ## Como é a case
 
@@ -56,4 +56,4 @@ Para regenerar: `python model3d/phantom-3rdparty/autodeskfusion/case_phantom_3rd
 
 ## Status
 
-Validado por geometria (malhas fechadas, interferência 0,000 mm³ com os envelopes dos conectores) e, no NES, pelo teste de encaixe impresso. O desenho de fecho é o mesmo do Geniecom, que foi impresso e validado. A folga do DB9 (0,15 mm) não foi testada e a case completa ainda não foi impressa com este adaptador.
+**Impressa e validada** com o adaptador comprado: DB9 e NES encaixam, e a case fecha com os parafusos M3×8 mm. Também foi validada por geometria (malhas fechadas, interferência 0,000 mm³ com os envelopes dos conectores). O desenho de fecho é o mesmo do Geniecom.

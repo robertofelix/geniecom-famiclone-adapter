@@ -1,6 +1,6 @@
 """
 Case sob medida para um adaptador NES -> Phantom System / Top Game / Turbo Game COMPRADO
-PRONTO (Mercado Livre). NÃO é a PCB deste repositório: veja o README desta pasta.
+PRONTO (Shopee). NÃO é a PCB deste repositório: veja o README desta pasta.
 
 Mesmo projeto da case do Geniecom (casca + placa do fundo, parafusos M3x8 nos cantos, batentes das
 orelhas do NES, nomes gravados no teto), com as medidas deste adaptador.

@@ -324,12 +324,12 @@ Fotos de um adaptador NES para Phantom System, Top Game e Turbo Game já montado
 
 #### Case para impressão 3D do Phantom System, Top Game e Turbo Game
 
-A case do Phantom usa o projeto anterior da [case do Geniecom](#case-para-impressão-3d): duas peças (base e tampa) com lingueta e ranhura, e quatro parafusos **M3×16 mm** em "ombros" nas laterais. O novo fecho do Geniecom (casca com placa de fundo e parafusos M3×8 nos cantos) ainda não foi levado para ela. As medidas são as da PCB do Phantom (35,8 × 31,2 mm, mais curta que a do Geniecom), e as janelas do DB9 e do NES têm as folgas validadas nos testes de encaixe. Dimensões externas: cerca de 45,1 × 40,2 × 26,7 mm. A distância entre a moldura do DB9 e a face do NES (40,16 mm) vem do Gerber da PCB do Phantom, que é fidedigno. A espessura da PCB (1,26 mm) está estimada como a do Geniecom. Como a PCB ainda não foi fabricada, a case também não foi testada.
+A case do Phantom usa o mesmo desenho da [case do Geniecom](#case-para-impressão-3d), já impressa e validada: caixa de lados retos, sem alças, com casco (paredes e teto) e placa de fundo, fechados por quatro parafusos **M3×8 mm** nos cantos, batentes das orelhas do NES e o nome "PHANTOM" gravado no teto do lado do DB9. As medidas são as da PCB do Phantom (31,2 × 35,8 mm, mais curta que a do Geniecom), e as janelas do DB9 e do NES têm as folgas validadas nos testes de encaixe. Dimensões externas: 44,9 × 39,9 × 26,7 mm. A distância entre a moldura do DB9 e a face do NES (40,16 mm) vem do Gerber da PCB do Phantom, que é fidedigno e pode ficar uns 0,17 mm abaixo do valor medido. A espessura da PCB será a mesma do Geniecom (1,26 mm), então a altura da janela do DB9 (14,0 mm com a PCB) é a que já foi validada. Como a PCB ainda não foi fabricada, a case também não foi impressa nem testada.
 
 | Arquivo | Descrição |
 | --- | --- |
-| [model3d/phantom/stl/case_base.stl](model3d/phantom/stl/case_base.stl) | Base, pronta para imprimir (fundo na mesa) |
-| [model3d/phantom/stl/case_lid.stl](model3d/phantom/stl/case_lid.stl) | Tampa, já virada para imprimir (teto na mesa) |
+| [model3d/phantom/stl/case_base.stl](model3d/phantom/stl/case_base.stl) | Placa de fundo, pronta para imprimir (fundo na mesa) |
+| [model3d/phantom/stl/case_lid.stl](model3d/phantom/stl/case_lid.stl) | Casco, já virado para imprimir (teto na mesa) |
 | [model3d/phantom/stl/case_assembly.stl](model3d/phantom/stl/case_assembly.stl) | Conjunto montado, só para conferência visual |
 | [model3d/phantom/stl/preview_render.png](model3d/phantom/stl/preview_render.png) | Pré-visualização |
 | [model3d/phantom/autodeskfusion/case_phantom.py](model3d/phantom/autodeskfusion/case_phantom.py) | Script paramétrico (CadQuery) |
