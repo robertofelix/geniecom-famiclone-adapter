@@ -27,28 +27,28 @@ import cadquery as cq
 # PARÂMETROS - edite aqui
 # ============================================================
 # --- PCB do adaptador de terceiros (sem layout; ESTIMADA pela foto) ---
-pcb_w = 32.0            # largura (X)  ESTIMADO (foto: ~31,5)
-pcb_l = 38.6            # comprimento (Y)  ESTIMADO: face do NES (42,96) menos o balanço do NES (4,36)
-pcb_t = 1.6             # espessura (padrão JLCPCB)
+pcb_w = 33.11           # largura (X)  MEDIDO (o 33,15 anterior era esta largura, não a do DB9)
+pcb_l = 37.73          # comprimento (Y)  MEDIDO
+pcb_t = 1.65            # espessura da PCB do adaptador comprado
 
 # --- Conector DB9 fêmea ângulo reto (footprint do EasyEDA) ---
-db9_body_w = 33.15      # largura do flange metálico do DB9 (X)  (MEDIDO com paquímetro: 33,15 mm)
+db9_body_w = 30.95      # largura do flange metálico do DB9 (X)  (todos os DB9 são iguais: 30,95 mm, medido com paquímetro)
 db9_body_d = 12.5       # profundidade do corpo sobre a PCB (Y, de 0 a 12.5)
-db9_h = 12.5            # altura do corpo acima da PCB (medido 14,03 com a PCB, menos 1,6 = 12,4; arredondado p/ cima)
+db9_h = 12.75           # DB9 acima da PCB: 14,0 mm no total com a PCB de 1,25 (teste de encaixe impresso)
 db9_shell_out = 6.0     # quanto a carcaça D + porcas de trava saem além da borda da PCB
 db9_axis_h = 5.9        # altura do eixo da carcaça D acima da PCB (MEDIDO: borda de baixo 2,68 e de cima 9,1 -> centro 5,9)
 db9_screw_x = 12.5      # posição X dos parafusos de fixação do DB9 (±)
 db9_screw_y = 9.5       # posição Y dos parafusos de fixação do DB9
 
 # --- Conector NES 7 pinos (footprint do EasyEDA) ---
-nes_body_w = 24.9       # largura do corpo com a moldura (X)  (MEDIDO: 24,88 a 24,92)
+nes_body_w = 24.88      # largura do corpo com a moldura (X)  (MEDIDO: 24,88 a 24,92)
 nes_body_d = 14.0       # profundidade do corpo (Y)
-nes_front = 42.96       # distância da face da moldura do DB9 até a face do NES (MEDIDO neste adaptador: 42,96)
+nes_front = 42.44       # distância da face da moldura do DB9 até a face do NES (MEDIDO neste adaptador: 42,96)
 nes_body_y0 = nes_front - nes_body_d  # início do corpo (Y)
-nes_h = 15.0            # altura do corpo acima da PCB (medido ~16,4 com a PCB, menos 1,6 = 14,8; arredondado p/ cima)
+nes_h = 16.8            # janela do NES = 24,88 x 16,8 + folga 0,05: o mesmo recorte do teste de encaixe impresso (1 furo)
 
 # --- Por baixo da PCB (pinos soldados + cabeças dos parafusos do DB9) ---
-under_h = 3.5           # espaço livre sob a PCB
+under_h = 4.25          # espaço livre sob a PCB (pinos de fixação do NES: 3,75 mm + 0,5 de margem)
 
 # --- Case ---
 wall = 2.4              # parede lateral
@@ -62,7 +62,9 @@ edge_chamfer = 1.0      # chanfro das arestas superiores
 base_chamfer = 0.8      # chanfro do fundo (evita "pé de elefante")
 
 # --- Janelas: moldura do DB9 e face do NES ficam rentes às faces da case ---
-window_clear = 0.25     # folga ao redor da moldura do DB9 e do corpo do NES
+db9_clear = 0.15        # folga do DB9 (o teste de encaixe impresso NÃO vale aqui: PCB mais grossa)
+nes_clear = 0.05        # folga do NES (validada no teste de encaixe impresso)
+nes_r = 2.0             # raio dos 4 cantos do corpo do NES
 pcb_slot_clear = 0.2    # folga do rasgo da PCB na parede frontal
 
 # --- Parafusos M3 autorroscantes, cabeça escareada (kit Zmbroll) ---
@@ -209,12 +211,13 @@ for s in (-1, 1):
 y_f0, y_f1 = out_y0 - 1.0, cav_y0 + 0.01
 pcb_slot = box(-(pcb_w / 2 + pcb_slot_clear), pcb_w / 2 + pcb_slot_clear, y_f0, y_f1,
                pcb_bot - pcb_slot_clear, split_z + 0.01)
-db9_win = box(-(db9_body_w / 2 + window_clear), db9_body_w / 2 + window_clear, y_f0, y_f1,
-              split_z, pcb_top + db9_h + window_clear)
+db9_win = box(-(db9_body_w / 2 + db9_clear), db9_body_w / 2 + db9_clear, y_f0, y_f1,
+              split_z, pcb_top + db9_h + db9_clear)
 # NES: o corpo do conector atravessa a parede traseira, com a face rente à face da case.
 y_b0, y_b1 = cav_y1 - 0.01, out_y1 + 1.0
-nes_win = box(-(nes_body_w / 2 + window_clear), nes_body_w / 2 + window_clear, y_b0, y_b1,
-              split_z, pcb_top + nes_h + window_clear)
+nes_win = box(-(nes_body_w / 2 + nes_clear), nes_body_w / 2 + nes_clear, y_b0, y_b1,
+              split_z, pcb_top + nes_h + nes_clear)
+nes_win = nes_win.edges("|Y").fillet(nes_r + nes_clear)
 for w in (pcb_slot, db9_win, nes_win):
     base = base.cut(w)
     lid = lid.cut(w)
@@ -227,13 +230,13 @@ envelopes = {
     "DB9 corpo": box(-db9_body_w / 2, db9_body_w / 2, 0, db9_body_d, pcb_top, pcb_top + db9_h),
     "DB9 carcaca+porcas (fora da case)": box(-db9_screw_x - 2.1, db9_screw_x + 2.1, -db9_shell_out, 0,
                               zc - 4.5, zc + 4.5),
-    "NES corpo": box(-nes_body_w / 2, nes_body_w / 2, nes_body_y0, nes_front, pcb_top, pcb_top + nes_h),
+    "NES corpo": box(-nes_body_w / 2, nes_body_w / 2, nes_body_y0, nes_front, pcb_top, pcb_top + nes_h).edges("|Y").fillet(nes_r),
     "NES orelhas": box(-15.1, 15.1, nes_front - 5.32, nes_front - 3.22, pcb_top, pcb_top + 8),
     "pinos sob PCB": box(-9, 9, 6, 28, pcb_bot - 2.0, pcb_bot),
     "parafusos DB9 sob PCB": cyl(-db9_screw_x, db9_screw_y, pcb_bot - 2.5, pcb_bot, 6.0)
     .union(cyl(db9_screw_x, db9_screw_y, pcb_bot - 2.5, pcb_bot, 6.0)),
-    "pegs NES sob PCB": cyl(-10.25, pcb_l - 2.6, pcb_bot - 2.5, pcb_bot, 2.4)
-    .union(cyl(10.25, pcb_l - 2.6, pcb_bot - 2.5, pcb_bot, 2.4)),
+    "pegs NES sob PCB": cyl(-10.25, pcb_l - 2.6, pcb_bot - 3.75, pcb_bot, 2.4)
+    .union(cyl(10.25, pcb_l - 2.6, pcb_bot - 3.75, pcb_bot, 2.4)),
 }
 print("--- interferência (mm3, esperado ~0) ---")
 worst = 0.0

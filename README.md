@@ -155,7 +155,7 @@ Esta belezinha!
 
 ## PCB (Gerber)
 
-Em junho de 2025, passei a me interessar cada vez mais por eletrônica e retro consoles. Por isso, criei no [EasyEDA](https://easyeda.com/) o projeto de uma [PCB](https://es.wikipedia.org/wiki/Circuito_impreso) com a pinagem que converte NES para Geniecom, para fabricá-la na [JLCPCB](https://jlcpcb.com/). A placa mede aproximadamente 31 × 40,5 mm.
+Em junho de 2025, passei a me interessar cada vez mais por eletrônica e retro consoles. Por isso, criei no [EasyEDA](https://easyeda.com/) o projeto de uma [PCB](https://es.wikipedia.org/wiki/Circuito_impreso) com a pinagem que converte NES para Geniecom, para fabricá-la na [JLCPCB](https://jlcpcb.com/). A placa mede 30,9 × 40,3 mm e tem 1,26 mm de espessura.
 
 Os arquivos estão disponíveis para quem quiser usar ou modificar:
 
@@ -197,9 +197,9 @@ A placa chegou e foi montada com os dois conectores.
 
 Case sob medida para a [PCB do Geniecom](#pcb-gerber) montada (PCB, DB9 e conector NES soldados), sem nada exposto: a moldura do DB9 e o corpo do NES atravessam a parede da case e ficam com a face rente à face externa, então a carcaça D do DB9 sai inteira (encaixe completo no console) e o plugue do controle entra direto no NES. São duas peças, base e tampa, geradas por script (CadQuery) e exportadas em STL e STEP. Para o Phantom System, Top Game e Turbo Game, veja a [case do Phantom](#case-para-impressão-3d-do-phantom-system-top-game-e-turbo-game).
 
-> **Status:** modelo validado só por geometria (malhas fechadas e teste de interferência com os envelopes dos conectores). Ainda não foi impresso nem testado com a PCB.
+> **Status:** o modelo passou na checagem de interferência com os envelopes dos conectores e as malhas são fechadas. As folgas das janelas do DB9 e do NES foram calibradas com [testes de encaixe impressos](model3d/frame-tests/README.md). A versão atual da case completa ainda não foi impressa.
 
-![Pré-visualização da case: vistas montada, base, tampa e corte longitudinal](model3d/geniecom/stl/preview.png)
+![Pré-visualização da case do Geniecom: fechada pelos dois lados, aberta com a PCB dentro da base e vista de cima](model3d/geniecom/stl/preview_render.png)
 
 | Arquivo | Descrição |
 | --- | --- |
@@ -214,16 +214,17 @@ Case sob medida para a [PCB do Geniecom](#pcb-gerber) montada (PCB, DB9 e conect
 - Impressão 3D: `case_base.stl` e `case_lid.stl` (não imprima o `case_assembly.stl`, que é só para visualização).
 - Parafusos: **4 × M3×16 mm**, autorroscantes, de cabeça escareada, colocados pelo fundo da base.
 - A PCB já montada, com o DB9 e o conector NES soldados.
+- Opcional: os [testes de encaixe](model3d/frame-tests/README.md) do DB9 e do NES, para conferir a folga na sua impressora antes de imprimir a case.
 
 ### Características
 
-- Medidas dos conectores tiradas do layout da PCB ([hardware/easyeda/geniecom_pcb.json](hardware/easyeda/geniecom_pcb.json)).
+- Medidas dos conectores conferidas com paquímetro e com o layout da PCB ([hardware/easyeda/geniecom_pcb.json](hardware/easyeda/geniecom_pcb.json)). Janelas do DB9 e do NES recortadas com a folga validada nos testes de encaixe, e a janela do NES acompanha os cantos boleados do conector (raio de 2 mm).
 - A PCB fica apoiada em quatro blocos pequenos nos cantos da base (dois na frente e dois atrás), com batente traseiro. Não há pilares apertando a PCB: a tampa só tem dois pilares junto às orelhas do conector NES, a 0,6 mm de distância da placa, que impedem a PCB de sair pela frente quando se desconecta o plugue.
 - Nenhum milímetro de encaixe é perdido no lado do DB9: a carcaça D sai inteira (6 mm) e a moldura do DB9 sai 0,3 mm além da face frontal da case, o que cobre a folga de posição da PCB (a moldura pode ficar entre 0,13 e 0,5 mm para fora, nunca para dentro). Uma parede de 1,6 mm da base, abaixo da PCB, fecha o vão do fundo.
-- Folga sob a PCB para os pinos soldados e as cabeças dos parafusos do DB9.
+- Espaço de 4,25 mm sob a PCB para os pinos de fixação do NES (3,75 mm), os pinos soldados e as cabeças dos parafusos do DB9.
 - Lingueta e ranhura alinham base e tampa.
-- Quatro parafusos **M3 autorroscantes de cabeça escareada** (kit Zmbroll): a cabeça fica embutida no fundo da base e o parafuso rosqueia em furos-piloto de 2,5 mm na tampa. Use **M3×16 mm**. Os parafusos ficam em "ombros" nas laterais, entre os dois conectores, o que leva a largura externa a 47 mm.
-- Dimensões externas: cerca de 47 × 44,5 × 24,5 mm. A cavidade tem 33,9 mm de largura para acomodar o flange metálico do DB9 (33,15 mm).
+- Quatro parafusos **M3 autorroscantes de cabeça escareada** (kit Zmbroll): a cabeça fica embutida no fundo da base e o parafuso rosqueia em furos-piloto de 2,5 mm na tampa. Use **M3×16 mm**. Os parafusos ficam em "ombros" nas laterais, entre os dois conectores, o que leva a largura externa a 45 mm.
+- Dimensões externas: cerca de 45 × 44,5 × 26,7 mm. A cavidade tem 31,6 mm de largura (a moldura do DB9 tem 30,95 mm) e 22,7 mm de altura livre.
 
 ### Impressão
 
@@ -231,18 +232,22 @@ PLA, camada de 0,2 mm, 3 paredes, sem suporte. Os STLs já estão na orientaçã
 
 ### Medidas a conferir
 
-As larguras e alturas dos conectores foram conferidas com paquímetro (as medidas do NES e do DB9 são as mesmas no Geniecom e no Phantom). Já com todas as medidas conferidas:
+As larguras e alturas dos conectores foram conferidas com paquímetro (as medidas do NES e do DB9 são as mesmas no Geniecom e no Phantom). Parâmetros do Geniecom:
 
 | Parâmetro | Valor | Observação |
 | --- | --- | --- |
-| `nes_h` | 15,0 mm | Medido: 16,4 mm com a PCB, ou 14,8 mm acima dela; arredondado para cima. Define a altura total da case |
-| `db9_h` | 12,5 mm | Medido: 14,03 mm com a PCB, ou 12,4 mm acima dela; arredondado para cima |
-| `db9_body_w` | 33,15 mm | Medido: largura do flange metálico do DB9 |
+| `nes_h` | 16,8 mm | Mesmo recorte do teste de encaixe impresso do NES (24,88 × 16,8 mm, folga 0,05 mm, perfeito com 1 furo). Define a altura total da case |
+| `db9_h` | 12,74 mm | Medido: 14,0 mm no total com a PCB de 1,26 mm (confirmado no teste de encaixe impresso) |
+| `db9_body_w` | 30,95 mm | Largura da moldura do DB9: medida com paquímetro (30,93 mm) |
 | `db9_axis_h` | 5,9 mm | Medido: borda de baixo da abertura a 2,68 mm e a de cima a 9,1 mm do plano da PCB; o centro fica em 5,9 mm. Só entra na checagem de interferência |
-| `nes_body_w` | 24,9 mm | Medido: largura do conector NES com a moldura (24,88 a 24,92). A janela da case tem 0,25 mm de folga de cada lado |
+| `nes_body_w` | 24,88 mm | Medido: largura do conector NES com a moldura. A janela da case tem 0,05 mm de folga de cada lado |
 | `nes_front` | 44,79 mm | Medido na PCB do Geniecom montada: distância da face da moldura do DB9 até a face do NES (o layout dá 44,62 mm). No Phantom o valor vem do layout (40,16 mm) |
+| `pcb_t` | 1,26 mm | Espessura da PCB do Geniecom, medida |
+| `under_h` | 4,25 mm | Espaço sob a PCB: pinos de fixação do NES de 3,75 mm mais 0,5 mm de margem |
+| `db9_clear` | 0,00 mm | Folga da janela do DB9, validada no teste de encaixe impresso |
+| `nes_clear` | 0,05 mm | Folga da janela do NES, validada no teste de encaixe impresso |
 
-Também vale testar o encaixe: a janela do DB9 (33,4 mm de largura) e a do NES (25,4 × 15,4 mm) seguem as medidas acima. Se alguma peça não entrar, aumente `window_clear` (folga ao redor das janelas).
+Para calibrar as folgas na sua impressora, imprima antes os [testes de encaixe](model3d/frame-tests/README.md) do DB9 e do NES (plaquinhas pequenas). Valores validados: DB9 com folga de 0,00 mm (janela de 30,95 mm) e NES com 0,05 mm por lado (janela de 24,98 × 16,85 mm). Se alguma peça não entrar na sua impressora, aumente `db9_clear` ou `nes_clear`.
 
 ### Regenerar
 
@@ -317,14 +322,14 @@ Fotos de um adaptador NES para Phantom System, Top Game e Turbo Game já montado
 
 #### Case para impressão 3D do Phantom System, Top Game e Turbo Game
 
-A case segue o mesmo projeto da [case do Geniecom](#case-para-impressão-3d), com as medidas da PCB do Phantom (35,8 × 31,2 mm, mais curta que a do Geniecom). Os conectores são os mesmos, então as janelas do DB9 e do NES e os parafusos M3×16 não mudam. Dimensões externas: cerca de 47 × 40,2 × 24,5 mm. A distância entre a moldura do DB9 e a face do NES (40,16 mm) vem do layout da PCB do Phantom e ainda não foi conferida com paquímetro. As [medidas a conferir](#medidas-a-conferir) e as dicas de impressão valem igualmente aqui. Como a PCB ainda não foi fabricada, a case também não foi testada.
+A case segue o mesmo projeto da [case do Geniecom](#case-para-impressão-3d), com as medidas da PCB do Phantom (35,8 × 31,2 mm, mais curta que a do Geniecom). Os conectores são os mesmos, então as janelas do DB9 e do NES (com as folgas validadas nos testes de encaixe) e os parafusos M3×16 não mudam. A espessura da PCB (1,26 mm) está estimada como a do Geniecom. Dimensões externas: cerca de 45,1 × 40,2 × 26,7 mm. A distância entre a moldura do DB9 e a face do NES (40,16 mm) vem do Gerber da PCB do Phantom, que é fidedigno. As [medidas a conferir](#medidas-a-conferir) e as dicas de impressão valem igualmente aqui. Como a PCB ainda não foi fabricada, a case também não foi testada.
 
 | Arquivo | Descrição |
 | --- | --- |
 | [model3d/phantom/stl/case_base.stl](model3d/phantom/stl/case_base.stl) | Base, pronta para imprimir (fundo na mesa) |
 | [model3d/phantom/stl/case_lid.stl](model3d/phantom/stl/case_lid.stl) | Tampa, já virada para imprimir (teto na mesa) |
 | [model3d/phantom/stl/case_assembly.stl](model3d/phantom/stl/case_assembly.stl) | Conjunto montado, só para conferência visual |
-| [model3d/phantom/stl/preview.png](model3d/phantom/stl/preview.png) | Pré-visualização |
+| [model3d/phantom/stl/preview_render.png](model3d/phantom/stl/preview_render.png) | Pré-visualização |
 | [model3d/phantom/autodeskfusion/case_phantom.py](model3d/phantom/autodeskfusion/case_phantom.py) | Script paramétrico (CadQuery) |
 | [model3d/phantom/autodeskfusion/case_base.step](model3d/phantom/autodeskfusion/case_base.step), [case_lid.step](model3d/phantom/autodeskfusion/case_lid.step), [case_assembly.step](model3d/phantom/autodeskfusion/case_assembly.step) | Para importar no Autodesk Fusion |
 
@@ -353,10 +358,16 @@ Para regenerar: `python model3d/phantom/autodeskfusion/case_phantom.py`.
 │   │       ├── case_base.stl      # Base (orientação de impressão)
 │   │       ├── case_lid.stl       # Tampa (orientação de impressão)
 │   │       ├── case_assembly.stl  # Conjunto montado
-│   │       └── preview.png        # Pré-visualização
-│   └── phantom/               # Mesma organização, para o Phantom System, Top Game e Turbo Game
-│       ├── autodeskfusion/    # case_phantom.py e case_*.step
-│       └── stl/               # case_*.stl e preview.png
+│   │       └── preview_render.png # Pré-visualização
+│   ├── phantom/               # Mesma organização, para o Phantom System, Top Game e Turbo Game
+│   │   ├── autodeskfusion/    # case_phantom.py e case_*.step
+│   │   └── stl/               # case_*.stl e preview_render.png
+│   └── frame-tests/           # Testes de encaixe das janelas do DB9 e do NES
+│       ├── db9_frame_test.py  # Gera db9_frame_test.stl (4 folgas)
+│       ├── db9_frame_test.stl
+│       ├── nes_frame_test.py  # Gera nes_frame_test.stl (4 folgas)
+│       ├── nes_frame_test.stl
+│       └── README.md          # Como imprimir e ler o teste
 └── hardware/
     ├── gerber_geniecom.zip    # Arquivos Gerber da PCB do Geniecom
     ├── gerber_phantom.zip     # Arquivos Gerber da PCB do Phantom System

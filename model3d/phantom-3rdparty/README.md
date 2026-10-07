@@ -15,31 +15,35 @@ PCB **vermelha**, com a serigrafia "TURBO GAME NINTENDO" e setas indicando o sen
 
 ## Por que existe
 
-A PCB deste adaptador é diferente das do repositório. A distância da face da moldura do DB9 até a face do conector NES foi medida com paquímetro neste adaptador e deu **42,96 mm**, e a case foi dimensionada em cima dela. Nas PCBs do repositório essa distância é outra (44,79 mm medidos no Geniecom e 40,16 mm no layout do Phantom).
+A PCB deste adaptador é diferente das do repositório. A distância da face da moldura do DB9 até a face do conector NES foi medida com paquímetro neste adaptador e deu **42,44 mm**, e a case foi dimensionada em cima dela. Nas PCBs do repositório essa distância é outra (44,79 mm no Geniecom e 40,16 mm no Gerber do Phantom).
 
-## O que veio de medição e o que é estimativa
+## Medidas usadas
 
 | Parâmetro | Valor | Origem |
 | --- | --- | --- |
-| `nes_front` (moldura do DB9 até a face do NES) | 42,96 mm | Medido neste adaptador (leitura do paquímetro na foto) |
-| `nes_body_w` (largura do NES com a moldura) | 24,9 mm | Medido |
-| `db9_body_w` (largura da moldura metálica do DB9) | 33,15 mm | Medido |
-| `nes_h`, `db9_h` (alturas acima da PCB) | 15,0 e 12,5 mm | Medido (com a PCB de 1,6 mm) e arredondado para cima |
-| `pcb_w` (largura da PCB) | 32,0 mm | **Estimado** |
-| `pcb_l` (comprimento da PCB) | 38,6 mm | **Estimado** (face do NES menos o balanço de 4,36 mm do conector) |
+| `nes_front` (moldura do DB9 até a face do NES) | 42,44 mm | Medido neste adaptador (leitura do paquímetro na foto) |
+| `nes_body_w` (largura do NES com a moldura) | 24,88 mm | Medido |
+| `db9_body_w` (largura da moldura metálica do DB9) | 30,95 mm | Medido (o DB9 é o mesmo das outras PCBs) |
+| `nes_h`, `db9_h` (alturas acima da PCB) | 16,8 e 12,75 mm | Os mesmos conectores das outras PCBs |
+| `pcb_t` (espessura da PCB) | 1,65 mm | Medido (as PCBs do Geniecom e do Phantom têm 1,26 mm) |
+| `under_h` (espaço sob a PCB) | 4,25 mm | Pinos de fixação do NES de 3,75 mm mais 0,5 mm de margem |
+| `nes_clear` (folga da janela do NES) | 0,05 mm | Validada no [teste de encaixe do NES](../frame-tests/README.md) |
+| `db9_clear` (folga da janela do DB9) | 0,15 mm | **Não testada.** O teste de encaixe do DB9 não vale aqui, porque a altura do recorte inclui a PCB e esta é mais grossa |
+| `pcb_w` (largura da PCB) | 33,11 mm | Medido |
+| `pcb_l` (comprimento da PCB) | 37,73 mm | Medido (o NES avança 4,71 mm além da PCB) |
 
-Se a largura e o comprimento reais da PCB forem diferentes, meça com paquímetro e ajuste `pcb_w` e `pcb_l` em `autodeskfusion/case_phantom_3rdparty.py`. A largura da cavidade (33,9 mm) é definida pela moldura do DB9, então uma PCB até cerca de 33 mm de largura cabe sem mudar a case.
+A largura da cavidade (33,8 mm) é definida pela largura da PCB (33,11 mm), que é maior que a moldura do DB9 (30,95 mm).
 
 ## Como é a case
 
-Mesmo desenho das outras: duas peças (base e tampa), quatro parafusos **M3×16 mm** autorroscantes de cabeça escareada pelo fundo da base. A moldura do DB9 e o corpo do NES atravessam as paredes e ficam com a face rente à face da case. Tamanho externo: cerca de 47 × 43,0 × 24,5 mm.
+Mesmo desenho das outras: duas peças (base e tampa), quatro parafusos **M3×16 mm** autorroscantes de cabeça escareada pelo fundo da base. A moldura do DB9 e o corpo do NES atravessam as paredes e ficam com a face rente à face da case. A janela do NES acompanha os cantos boleados do conector. Tamanho externo: cerca de 47,0 × 42,5 × 27,1 mm (cavidade de 33,8 × 39,2 × 23,1 mm).
 
 ## Arquivos
 
 - `stl/case_base.stl`: base, pronta para imprimir (fundo na mesa).
 - `stl/case_lid.stl`: tampa, já virada para imprimir (teto na mesa).
 - `stl/case_assembly.stl`: conjunto montado, só para visualização (não imprimir).
-- `stl/preview.png`: pré-visualização.
+- `stl/preview_render.png`: pré-visualização.
 - `autodeskfusion/case_phantom_3rdparty.py`: script paramétrico (CadQuery) que gera tudo.
 - `autodeskfusion/case_*.step`: para importar no Autodesk Fusion.
 
@@ -47,4 +51,4 @@ Para regenerar: `python model3d/phantom-3rdparty/autodeskfusion/case_phantom_3rd
 
 ## Status
 
-Validado só por geometria (malhas fechadas e teste de interferência com os envelopes dos conectores). Ainda não foi impresso nem testado com o adaptador.
+Validado por geometria (malhas fechadas e teste de interferência com os envelopes dos conectores) e, no NES, pelo teste de encaixe impresso. A folga do DB9 não foi testada e a case completa ainda não foi impressa com o adaptador.
