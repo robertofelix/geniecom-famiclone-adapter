@@ -11,13 +11,13 @@ Gera (CadQuery):
 Uso:  pip install cadquery   &&   python case_phantom.py
 
 Sistema de coordenadas do modelo (mm):
-  X = largura (dimensão de 31 mm da PCB), 0 = centro da PCB
+  X = largura da PCB (31,2 mm), 0 = centro da PCB
   Y = comprimento, 0 = borda da PCB do lado do DB9, +Y aponta para o NES
   Z = altura, 0 = fundo externo da base
 
-Todas as dimensões dos conectores vêm do layout em hardware/easyeda/phantom_pcb.json
-(unidade do EasyEDA: 1 = 0,254 mm). Itens marcados "ESTIMADO" não estão no arquivo
-e devem ser conferidos com paquímetro nos seus conectores.
+Dimensões da PCB e posições dos conectores: layout/Gerber em hardware/easyeda/phantom_pcb.json
+(unidade do EasyEDA: 1 = 0,254 mm). Larguras e alturas dos conectores: paquímetro (mesmos do Geniecom).
+Folgas das janelas (db9_clear, nes_clear): validadas nos testes de ../../frame-tests.
 """
 import math
 import os

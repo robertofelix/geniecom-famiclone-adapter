@@ -2,21 +2,21 @@
 Case sob medida para a PCB do adaptador NES -> Geniecom (hardware/gerber_geniecom.zip).
 
 Gera (CadQuery):
-  ../stl/case_base.stl       base, orientada para impressão (fundo na mesa)
-  ../stl/case_lid.stl        tampa, orientada para impressão (virada, teto na mesa)
+  ../stl/case_base.stl       placa do fundo (2 mm, com as abas das janelas), fundo na mesa
+  ../stl/case_lid.stl        casca (paredes + teto), orientada para impressão (virada, teto na mesa)
   ../stl/case_assembly.stl   conjunto montado (só para conferência visual)
   case_base.step, case_lid.step, case_assembly.step   (importar no Fusion)
 
 Uso:  pip install cadquery   &&   python case_geniecom.py
 
 Sistema de coordenadas do modelo (mm):
-  X = largura (dimensão de 31 mm da PCB), 0 = centro da PCB
+  X = largura da PCB (30,9 mm), 0 = centro da PCB
   Y = comprimento, 0 = borda da PCB do lado do DB9, +Y aponta para o NES
   Z = altura, 0 = fundo externo da base
 
-Todas as dimensões dos conectores vêm do layout em hardware/easyeda/geniecom_pcb.json
-(unidade do EasyEDA: 1 = 0,254 mm). Itens marcados "ESTIMADO" não estão no arquivo
-e devem ser conferidos com paquímetro nos seus conectores.
+Dimensões da PCB e posições dos conectores: layout em hardware/easyeda/geniecom_pcb.json
+(unidade do EasyEDA: 1 = 0,254 mm). Larguras, alturas e distância DB9->NES: paquímetro.
+Folgas das janelas (db9_clear, nes_clear): validadas nos testes de ../../frame-tests.
 """
 import math
 import os
@@ -51,11 +51,11 @@ nes_h = 16.8            # janela do NES = 24,88 x 16,8 + folga 0,05: o mesmo rec
 under_h = 4.25          # espaço livre sob a PCB (suporte medido: 3,75 mm abaixo da PCB + 0,5 de margem)
 
 # --- Case ---
-wall = 2.4              # parede lateral
+wall = 6.5              # parede lateral
 db9_protrusion = 0.3    # a moldura do DB9 sai 0,3 mm além da face da case: nenhum mm de encaixe é perdido, mesmo com a folga da PCB (-0,2 a +0,17 mm)
 end_wall = 1.6          # parede frontal/traseira (a moldura do DB9 e a face do NES ficam rentes à face externa)
 floor_t = 2.0           # fundo da base
-roof_t = 2.0            # teto da tampa
+roof_t = 2.0            # teto da casca
 side_gap = 0.35         # folga lateral PCB/conectores <-> parede
 top_gap = 0.4           # folga acima do conector mais alto
 case_r = 3.0            # raio dos cantos verticais externos
@@ -67,16 +67,13 @@ pcb_slot_clear = 0.1    # folga do rasgo da PCB na parede frontal
 
 # --- Parafusos M3 autorroscantes, cabeça escareada (kit Zmbroll) ---
 screw_clear_d = 3.4     # furo passante na base
-screw_head_d = 6.4      # diâmetro do escareado (cabeça M3 escareada ~ 5,5-6,0)
-screw_pilot_d = 2.5     # furo-piloto na tampa (autorroscante)
-screw_pilot_depth = 9.5 # profundidade do furo-piloto
-screw_ys = (17.1, 26.1) # posições Y (região livre entre os dois conectores)
+screw_head_d = 4.94     # diâmetro do escareado (cabeça M3 escareada ~ 5,5-6,0)
+screw_pilot_d = 2.6     # furo-piloto na casca (autorroscante)
+screw_pilot_depth = 7.0 # profundidade do furo-piloto
+screw_ys = (db9_protrusion + 6.5, nes_front - 6.5) # posições Y (região livre entre os dois conectores)
 pod_r = 2.0
 
-# --- Encaixe base/tampa e apoio da PCB ---
-tongue_w = 1.0          # largura da lingueta
-tongue_h = 1.6          # altura da lingueta
-tongue_clear = 0.2      # folga da ranhura
+# --- Apoio da PCB ---
 support_w = 3.0         # tamanho dos blocos de apoio da PCB
 hold_gap = 0.6          # folga entre os pilares das orelhas do NES e o topo da PCB (a PCB não encosta neles)
 
@@ -87,12 +84,12 @@ cav_hw = max(pcb_w, db9_body_w) / 2 + side_gap          # meia-largura da cavida
 cav_y0 = db9_protrusion + end_wall                      # parede interna frontal (lado DB9)
 cav_y1 = nes_front - end_wall                           # parede interna traseira (lado NES)
 cav_r = 0.3
-screw_x = cav_hw + 3.0                                  # posição X dos parafusos (±), fora da cavidade
+screw_x = cav_hw + wall / 2                                  # posição X dos parafusos (±), fora da cavidade
 pod_outer_x = screw_x + 3.6                             # borda externa dos "ombros" dos parafusos
 
 pcb_bot = floor_t + under_h                             # z da face de baixo da PCB
 pcb_top = pcb_bot + pcb_t                               # z da face de cima da PCB
-split_z = pcb_top                                       # plano de separação base/tampa
+split_z = floor_t                                       # plano de separação: placa do fundo / casca
 cav_top = pcb_top + max(nes_h, db9_h) + top_gap
 total_h = cav_top + roof_t
 
@@ -119,16 +116,9 @@ def cyl(x, y, z0, z1, d):
 
 
 # ============================================================
-# CORPO EXTERNO (base + tampa juntas, depois cortadas no plano de separação)
+# CORPO EXTERNO (placa + casca juntas, depois cortadas no plano de separação)
 # ============================================================
 outer = box(-out_hw, out_hw, out_y0, out_y1, 0, total_h, case_r)
-for s in (-1, 1):
-    x0, x1 = sorted((s * (out_hw - 3.0), s * pod_outer_x))
-    y_mid = sum(screw_ys) / 2
-    y_half = (screw_ys[1] - screw_ys[0]) / 2 + 3.6
-    pod = box(x0, x1, y_mid - y_half, y_mid + y_half, 0, total_h)
-    pod = pod.edges("|Z").edges(">X" if s > 0 else "<X").fillet(pod_r)  # só os cantos externos
-    outer = outer.union(pod)
 outer = outer.faces(">Z").edges().chamfer(edge_chamfer)
 outer = outer.faces("<Z").edges().chamfer(base_chamfer)
 
@@ -143,16 +133,10 @@ lid_zone = box(-big, big, -big, big, split_z, total_h + 1)
 # ============================================================
 base = outer.intersect(base_zone).cut(cavity)
 
-# lingueta de alinhamento (anel junto à parede, rente à face interna da cavidade)
-t_out = box(-cav_hw - tongue_w, cav_hw + tongue_w, cav_y0 - tongue_w, cav_y1 + tongue_w,
-            split_z, split_z + tongue_h, cav_r + tongue_w)
-t_in = box(-cav_hw, cav_hw, cav_y0, cav_y1, split_z - 1, split_z + tongue_h + 1, cav_r)
-base = base.union(t_out.cut(t_in))
-
 # apoios da PCB (sob a placa, nas bordas laterais, longe de pinos e parafusos)
 sx_in = cav_hw - support_w                      # blocos encostam na parede lateral
 supports_y = [
-    (out_y0, out_y0 + support_w),               # lado DB9 (a PCB começa em y = 0)
+    (cav_y0 + 0.3, cav_y0 + 0.3 + support_w),   # lado DB9 (0,3 = raio do canto da cavidade)
     (pcb_l - support_w, pcb_l),                 # lado NES
 ]
 for s in (-1, 1):
@@ -167,7 +151,7 @@ for s in (-1, 1):
 cone_h = (screw_head_d - screw_clear_d) / 2
 for s in (-1, 1):
     for y in screw_ys:
-        base = base.cut(cyl(s * screw_x, y, -1, split_z + tongue_h + 1, screw_clear_d))
+        base = base.cut(cyl(s * screw_x, y, -1, split_z + 0.01, screw_clear_d))
         cone = cq.Workplane(obj=cq.Solid.makeCone(
             screw_head_d / 2 + 0.01, screw_clear_d / 2, cone_h + 0.01,
             cq.Vector(s * screw_x, y, 0), cq.Vector(0, 0, 1)))
@@ -177,13 +161,6 @@ for s in (-1, 1):
 # TAMPA
 # ============================================================
 lid = outer.intersect(lid_zone).cut(cavity)
-
-# ranhura para a lingueta da base
-g_out = box(-cav_hw - tongue_w - tongue_clear, cav_hw + tongue_w + tongue_clear,
-            cav_y0 - tongue_w - tongue_clear, cav_y1 + tongue_w + tongue_clear,
-            split_z - 1, split_z + tongue_h + 0.3, cav_r + tongue_w + tongue_clear)
-g_in = box(-cav_hw, cav_hw, cav_y0, cav_y1, split_z - 2, split_z + tongue_h + 1, cav_r)
-lid = lid.cut(g_out.cut(g_in))
 
 # pilares junto às orelhas do NES: travam a PCB contra sair pela frente
 for s in (-1, 1):
@@ -200,20 +177,32 @@ for s in (-1, 1):
 #      a carcaça D sai inteira para fora (encaixe completo no console).
 y_f0, y_f1 = out_y0 - 1.0, cav_y0 + 0.01
 pcb_slot = box(-(pcb_w / 2 + pcb_slot_clear), pcb_w / 2 + pcb_slot_clear, y_f0, y_f1,
-               pcb_bot - pcb_slot_clear, split_z + 0.01)
+               pcb_bot - pcb_slot_clear, pcb_top + 0.01)
 db9_clear = 0.00  # folga do DB9 (validada no teste de encaixe impresso: 1 furo = 0,00 mm, encaixa justo)
 db9_win = box(-(db9_body_w / 2 + db9_clear), db9_body_w / 2 + db9_clear, y_f0, y_f1,
               split_z, pcb_top + db9_h + db9_clear)
-# NES: o corpo do conector atravessa a parede traseira, com a face rente à face da case.
 y_b0, y_b1 = cav_y1 - 0.01, out_y1 + 1.0
 nes_r = 2.0      # raio dos 4 cantos do corpo do NES (medido nas fotos, ~2 mm)
 nes_clear = 0.05 # folga do NES (validada no teste de encaixe impresso: 1 furo = 0,05 mm, encaixa justo)
 nes_win = box(-(nes_body_w / 2 + nes_clear), nes_body_w / 2 + nes_clear, y_b0, y_b1,
               split_z, pcb_top + nes_h + nes_clear)
-nes_win = nes_win.edges("|Y").fillet(nes_r + nes_clear)  # os 4 cantos boleados
+nes_win = nes_win.edges("|Y").edges(">Z").fillet(nes_r + nes_clear)  # cantos de cima boleados
+# as janelas descem até a placa: a casca não tem ponte na impressão. Só a casca é recortada;
+# as abas da placa (abaixo) tapam o vão sob os conectores.
 for w in (pcb_slot, db9_win, nes_win):
-    base = base.cut(w)
     lid = lid.cut(w)
+lip_clear = 0.15
+base = base.union(box(-(db9_body_w / 2 + db9_clear - lip_clear), db9_body_w / 2 + db9_clear - lip_clear,
+                      out_y0, cav_y0 + 0.01, floor_t - 0.01, pcb_bot - pcb_slot_clear))
+base = base.union(box(-(nes_body_w / 2 + nes_clear - lip_clear), nes_body_w / 2 + nes_clear - lip_clear,
+                      cav_y1 - 0.01, out_y1, floor_t - 0.01, pcb_top - 0.05))
+# enchimentos dos cantos de baixo: o conector tem os 4 cantos boleados, então a aba sobe junto
+# aos cantos até encostar (0,05 mm) no contorno boleado do conector
+_hw = nes_body_w / 2 + nes_clear - lip_clear
+_env = box(-(nes_body_w / 2 + 0.05), nes_body_w / 2 + 0.05, cav_y1 - 1, out_y1 + 1,
+           pcb_top, pcb_top + nes_h).edges("|Y").fillet(nes_r + 0.05)
+_pad = box(-_hw, _hw, cav_y1 - 0.01, out_y1, pcb_top - 0.06, pcb_top + nes_r + 0.1).cut(_env)
+base = base.union(_pad)
 
 # ============================================================
 # VERIFICAÇÃO DE INTERFERÊNCIA com os envelopes dos componentes

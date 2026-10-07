@@ -11,12 +11,12 @@ Gera (CadQuery):
 Uso:  pip install cadquery   &&   python case_phantom_3rdparty.py
 
 Sistema de coordenadas do modelo (mm):
-  X = largura (dimensão de 31 mm da PCB), 0 = centro da PCB
+  X = largura da PCB (33,11 mm), 0 = centro da PCB
   Y = comprimento, 0 = borda da PCB do lado do DB9, +Y aponta para o NES
   Z = altura, 0 = fundo externo da base
 
-Medidas dos conectores: paquímetro. Medidas da PCB do adaptador (largura e comprimento):
-ESTIMADAS a partir de uma foto, pois não há arquivo de layout. Itens "ESTIMADO" devem ser conferidos.
+Medidas dos conectores e da PCB do adaptador (largura, comprimento, espessura): paquímetro.
+Não há arquivo de layout desta PCB. A folga do DB9 (db9_clear) não foi testada.
 """
 import math
 import os
