@@ -197,7 +197,7 @@ A placa chegou e foi montada com os dois conectores.
 
 Case sob medida para a [PCB do Geniecom](#pcb-gerber) montada (PCB, DB9 e conector NES soldados), sem nada exposto e sem "alças": é uma caixa de laterais retas. A moldura do DB9 e o corpo do NES atravessam a parede e ficam com a face rente à face externa, então a carcaça D do DB9 sai inteira (encaixe completo no console) e o plugue do controle entra direto no NES. São duas peças: a **casca** (paredes e teto, com as janelas dos conectores) e a **placa do fundo**, que fecha a caixa por baixo. Geradas por script (CadQuery) e exportadas em STL e STEP. Para o Phantom System, Top Game e Turbo Game, veja a [case do Phantom](#case-para-impressão-3d-do-phantom-system-top-game-e-turbo-game).
 
-> **Status:** a versão anterior desta case foi impressa e validada: molduras do DB9 e do NES, e fecho com 4 parafusos M3×8 mm. Desde então foram acrescentados os batentes das orelhas do NES (a PCB recuava cerca de 1 mm ao encaixar o plugue no DB9) e os nomes gravados no teto, que ainda não foram impressos. O modelo passa na checagem de interferência, inclusive entre as duas peças, e as malhas são fechadas.
+> **Status:** impressa e validada. As molduras do DB9 e do NES encaixam sem folga, o fecho com 4 parafusos M3×8 mm fecha perfeitamente e os conectores não se movem ao encaixar o plugue (os batentes das orelhas do NES resolveram o recuo da PCB). Os nomes gravados no teto saíram como esperado.
 
 ![Pré-visualização da case do Geniecom: fechada pelos dois lados, aberta com a PCB sobre a placa do fundo e vista de cima](model3d/geniecom/stl/preview_render.png)
 
