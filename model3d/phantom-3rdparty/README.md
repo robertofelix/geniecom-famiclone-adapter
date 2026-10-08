@@ -33,20 +33,21 @@ A PCB deste adaptador é diferente das do repositório. A distância da face da 
 | `pcb_w` (largura da PCB) | 32,26 mm | Medido com paquímetro (leitura 32,24 a 32,26 mm) |
 | `pcb_l` (comprimento da PCB) | 37,73 mm | Medido (o NES avança 4,71 mm além da PCB) |
 
-A largura da cavidade (33,0 mm) é definida pela largura da PCB (32,26 mm), que é só 1,31 mm maior que a moldura do DB9 (30,95 mm), ou 0,65 mm de cada lado. Por isso a janela do DB9 tem um degrau: 32,46 mm de largura na altura da PCB (1,65 mm) e 31,25 mm acima dela. A borda da PCB fica visível nas laterais do conector, e a protusão de 0,3 mm do DB9 foi mantida, sem perder encaixe do plugue. Se a fresta incomodar, dá para vedar com silicone ou epóxi depois de montar.
+A largura da cavidade (33,0 mm) é definida pela largura da PCB (32,26 mm), que é só 1,31 mm maior que a moldura do DB9 (30,95 mm), ou 0,65 mm de cada lado. Por isso a janela do DB9 tem duas larguras: 32,46 mm de largura na altura da PCB (1,65 mm) e 31,25 mm acima dela. A borda da PCB fica visível nas laterais do conector, e a protusão de 0,3 mm do DB9 foi mantida, sem perder encaixe do plugue. Se a fresta incomodar, dá para vedar com silicone ou epóxi depois de montar.
 
 ## Como é a case
 
 Mesmo desenho da [case do Geniecom](../geniecom) (já impressa e validada): caixa de lados retos, sem alças, em duas peças. Casco (paredes e teto) e placa de fundo de 2 mm, fechados por quatro parafusos **M3×8 mm** autorroscantes (cabeça Ø4,94 mm) nos quatro cantos, entrando por baixo e escondidos dentro das paredes de 6,5 mm. A PCB entra por baixo, então as janelas do DB9 e do NES são abertas até a placa de fundo, que tem "lábios" (folga de 0,15 mm) completando o contorno dos conectores.
 
 - **Batentes das orelhas do NES:** a PCB não recua quando se empurra o plugue do DB9.
-- **Nomes gravados no teto** (baixo relevo, porque o teto fica na mesa ao imprimir): "PHANTOM" no lado do DB9 e "NES" no lado do NES, lido a partir do lado do conector.
-- **Tamanho externo:** 46,0 × 42,2 × 27,1 mm (cavidade de 33,0 × 38,9 × 23,1 mm).
+- **Teto com degrau:** a parte do DB9 tem só a altura da moldura do DB9 (22,6 mm de altura externa), e logo antes do corpo do NES o teto sobe 4,5 mm até 27,1 mm, para caber o NES. O degrau fica entre y = 26,6 e 28,2 mm, contando da face do DB9.
+- **Nomes gravados no teto** (baixo relevo, 6 mm, como no Geniecom): "PHANTOM" no teto baixo (lado do DB9) e "NES" no teto alto, cada um lido a partir do lado do seu conector. O teto baixo imprime sobre suporte, então a superfície dele sai mais áspera.
+- **Tamanho externo:** 46,0 × 42,1 × 22,6 mm na parte do DB9 e 27,1 mm na parte do NES (cavidade de 33,0 × 38,9 mm, com 18,6 mm de altura na parte do DB9 e 23,1 mm na do NES).
 
 ## Arquivos
 
 - `stl/case_base.stl`: placa de fundo, pronta para imprimir (fundo na mesa).
-- `stl/case_lid.stl`: casco, já virado para imprimir (teto na mesa).
+- `stl/case_lid.stl`: casco, já virado para imprimir (teto alto na mesa). O teto baixo do lado do DB9 fica 4,5 mm acima da mesa e precisa de suporte (só nessa região).
 - `stl/case_assembly.stl`: conjunto montado, só para visualização (não imprimir).
 - `stl/preview_render.png`: pré-visualização.
 - `autodeskfusion/case_phantom_3rdparty.py`: script paramétrico (CadQuery) que gera tudo.
@@ -56,4 +57,4 @@ Para regenerar: `python model3d/phantom-3rdparty/autodeskfusion/case_phantom_3rd
 
 ## Status
 
-**Impressa e validada** com o adaptador comprado: DB9 e NES encaixam, e a case fecha com os parafusos M3×8 mm. Também foi validada por geometria (malhas fechadas, interferência 0,000 mm³ com os envelopes dos conectores). O desenho de fecho é o mesmo do Geniecom.
+**Impressa e validada** com o adaptador comprado, na versão com o teto em degrau. A primeira versão (teto reto, 27,1 mm de altura em toda a case) não encaixou direito, e a altura menor na ponta do DB9 resolveu. Também foi validada por geometria: malhas fechadas e interferência 0,000 mm³ com os envelopes dos conectores. O desenho de fecho (casco, placa de fundo e quatro M3×8 mm) é o mesmo do Geniecom.

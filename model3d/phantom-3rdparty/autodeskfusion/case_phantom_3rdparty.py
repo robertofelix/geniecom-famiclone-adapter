@@ -66,10 +66,13 @@ case_r = 3.0            # raio dos cantos verticais externos
 edge_chamfer = 1.0      # chanfro das arestas superiores
 base_chamfer = 0.8      # chanfro do fundo (evita "pé de elefante")
 
-# --- Texto gravado no teto (baixo-relevo: a casca imprime com o teto na mesa) ---
+# --- Textos gravados (baixo-relevo; a casca imprime com o teto na mesa) ---
 label_size = 6.0        # tamanho da fonte (altura das maiúsculas ~4,5 mm)
 label_depth = 0.4       # profundidade da gravação
 label_margin = 8.0      # distância do texto até a face de cada ponta
+
+# --- Degrau do teto: a parte do DB9 tem só a altura da moldura do DB9; a do NES é mais alta ---
+step_gap = 0.2          # folga entre a face interna do degrau e o corpo do NES
 
 # --- Janelas: moldura do DB9 e face do NES ficam rentes às faces da case ---
 pcb_slot_clear = 0.1    # folga do rasgo da PCB na parede frontal
@@ -100,13 +103,17 @@ pod_outer_x = screw_x + 3.6                             # borda externa dos "omb
 pcb_bot = floor_t + under_h                             # z da face de baixo da PCB
 pcb_top = pcb_bot + pcb_t                               # z da face de cima da PCB
 split_z = floor_t                                       # plano de separação: placa do fundo / casca
-cav_top = pcb_top + max(nes_h, db9_h) + top_gap
+cav_top = pcb_top + max(nes_h, db9_h) + top_gap         # teto interno da parte alta (NES)
 total_h = cav_top + roof_t
+cav_top_low = pcb_top + db9_h + top_gap                 # teto interno da parte baixa (DB9)
+total_low = cav_top_low + roof_t
 
 ear_y0, ear_y1 = nes_front - 5.32, nes_front - 3.22     # orelhas do NES (footprint), medidas a partir da face do NES
 out_hw = cav_hw + wall
 out_y0 = db9_protrusion                                 # face externa frontal (a moldura do DB9, em y = 0, sai db9_protrusion além dela)
 out_y1 = nes_front                                      # face externa traseira = face do NES
+y_step_in = nes_front - nes_body_d - step_gap           # face interna do degrau (começa a parte alta da cavidade)
+y_step_out = y_step_in - end_wall                       # face externa do degrau
 zc = pcb_top + db9_axis_h                               # altura do eixo da carcaça D (só para o teste de interferência)
 
 
@@ -129,11 +136,19 @@ def cyl(x, y, z0, z1, d):
 # ============================================================
 # CORPO EXTERNO (placa + casca juntas, depois cortadas no plano de separação)
 # ============================================================
+# caixa inteira (altura da parte do NES), com os chanfros do topo e do fundo; depois a parte do DB9
+# é rebaixada até a altura da moldura do DB9, deixando um degrau antes do corpo do NES
 outer = box(-out_hw, out_hw, out_y0, out_y1, 0, total_h, case_r)
 outer = outer.faces(">Z").edges().chamfer(edge_chamfer)
 outer = outer.faces("<Z").edges().chamfer(base_chamfer)
+outer = outer.cut(box(-out_hw - 1, out_hw + 1, out_y0 - 1, y_step_out, total_low, total_h + 1))
+# chanfro das arestas do teto baixo (a aresta côncava do degrau fica de fora)
+outer = (outer.edges(cq.selectors.BoxSelector((-out_hw - 1, out_y0 - 1, total_low - 0.01),
+                                              (out_hw + 1, y_step_out - 0.5, total_low + 0.01)))
+         .chamfer(edge_chamfer))
 
-cavity = box(-cav_hw, cav_hw, cav_y0, cav_y1, floor_t, cav_top, cav_r)
+cavity = (box(-cav_hw, cav_hw, cav_y0, y_step_in, floor_t, cav_top_low, cav_r)
+          .union(box(-cav_hw, cav_hw, y_step_in - 0.01, cav_y1, floor_t, cav_top, cav_r)))
 
 big = 400.0
 base_zone = box(-big, big, -big, big, -1, split_z)
@@ -180,9 +195,12 @@ for s in (-1, 1):
     # batente traseiro das orelhas: segura a PCB contra o empurrão do plugue do joystick no DB9
     lid = lid.union(box(xa, xb, ear_y1 + ear_gap, cav_y1 + 0.01, pcb_top + hold_gap, cav_top + 0.01))
 
-# texto gravado no teto: cada nome lê-se do lado do seu conector (PHANTOM do lado do DB9, NES do lado do NES)
-for _txt, _y in (("PHANTOM", out_y0 + label_margin + 2.2), ("NES", out_y1 - label_margin - 2.2)):
-    _t = (cq.Workplane("XY").workplane(offset=total_h - label_depth)
+# textos gravados nos tetos, cada nome lê-se do lado do seu conector:
+# "PHANTOM" no teto baixo (lado do DB9; esse teto imprime sobre suporte, então a superfície fica mais áspera)
+# e "NES" no teto alto (lado do NES)
+for _txt, _y, _z in (("PHANTOM", out_y0 + label_margin + 2.2, total_low),
+                     ("NES", out_y1 - label_margin - 2.2, total_h)):
+    _t = (cq.Workplane("XY").workplane(offset=_z - label_depth)
           .center(0, _y).text(_txt, label_size, label_depth + 0.2, kind="bold", halign="center", valign="center"))
     if _txt == "NES":
         _t = _t.rotate((0, _y, 0), (0, _y, 1), 180)   # NES lê-se do lado do seu conector (de cabeça para baixo em relação ao PHANTOM)
@@ -275,5 +293,6 @@ cq.exporters.export(assembly, os.path.join(here, "case_assembly.step"))
 bb = assembly.val().BoundingBox()
 print(f"Externo: {bb.xlen:.1f} x {bb.ylen:.1f} x {bb.zlen:.1f} mm (L x C x A)")
 print(f"Face do DB9 -> face do NES: {nes_front:.2f} mm")
-print(f"Cavidade: {2 * cav_hw:.1f} x {cav_y1 - cav_y0:.1f} x {cav_top - floor_t:.1f} mm")
+print(f"Cavidade: {2 * cav_hw:.1f} x {cav_y1 - cav_y0:.1f} mm, altura {cav_top_low - floor_t:.1f} (DB9) / {cav_top - floor_t:.1f} (NES) mm")
+print(f"Altura externa: {total_low:.1f} mm (parte do DB9) / {total_h:.1f} mm (parte do NES); degrau em y = {y_step_out:.1f}..{y_step_in:.1f}")
 print(f"Parafuso: M3 x {split_z + screw_pilot_depth - 1.0:.0f} mm (escareado, pela base)")
