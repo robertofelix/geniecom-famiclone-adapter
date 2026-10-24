@@ -27,7 +27,6 @@ Medidas dos conectores e da PCB do adaptador (largura, comprimento, espessura): 
 Não há arquivo de layout desta PCB. A altura e a profundidade do corpo do DB9 atrás da moldura
 (db9_body_h, db9_body_d) foram lidas em fotos: conferir com paquímetro se a case for refeita.
 """
-import math
 import os
 
 import cadquery as cq
@@ -63,10 +62,8 @@ under_h = 4.25          # espaço livre sob a PCB (suporte medido: 3,75 mm abaix
 
 # --- Case ---
 wall = 6.5              # parede lateral
-db9_back_gap = 0.0      # (não usado: o teto começa na borda da moldura do DB9)
 db9_protrusion = 0.3    # o berço termina 0,3 mm atrás da moldura do DB9
 end_wall = 1.6          # parede traseira e do degrau (a face do NES fica rente à face externa)
-front_wall = 0.0       # sem parede transversal: o berço é aberto na frente e o teto encosta na moldura do DB9
 floor_t = 2.0           # fundo da base
 roof_t = 2.0            # teto da casca
 side_gap = 0.35         # folga lateral PCB/conectores <-> parede
@@ -78,7 +75,6 @@ base_chamfer = 0.8      # chanfro do fundo (evita "pé de elefante")
 # --- Textos gravados (baixo-relevo; a casca imprime com o teto na mesa) ---
 label_size = 6.0        # tamanho da fonte (altura das maiúsculas ~4,5 mm)
 label_depth = 0.4       # profundidade da gravação
-label_margin = 8.0      # distância do texto até a face de cada ponta
 
 # --- Degrau do teto: a parte do DB9 tem só a altura da moldura do DB9; a do NES é mais alta ---
 step_gap = 6.5          # folga entre a face interna do degrau e o corpo do NES (validada: a barra de pinos do NES passa e o NES desce até o fim)
@@ -92,7 +88,6 @@ screw_head_d = 4.94     # diâmetro da cabeça escareada do M3×8 (medido com pa
 screw_pilot_d = 2.6     # furo-piloto na casca (autorroscante)
 screw_pilot_depth = 7.0 # profundidade do furo-piloto
 screw_ys = (db9_body_d + 6.5, nes_front - 6.5) # posições Y (região livre entre a face e o NES)
-pod_r = 2.0
 
 # --- Apoio da PCB ---
 support_w = 3.0         # tamanho dos blocos de apoio da PCB
@@ -105,11 +100,10 @@ ear_gap = 0.15         # folga (em Y) entre as orelhas do NES e os batentes da c
 cav_hw = max(pcb_w, db9_body_w) / 2 + side_gap          # meia-largura da cavidade
 y_wall0 = db9_plate_d                                    # o teto começa atrás da borda da moldura do DB9 e encosta nela; cobre o corpo atrás dela
 out_y0 = db9_protrusion                                 # face externa frontal do berço do DB9
-cav_y0 = y_wall0 + front_wall                            # parede interna frontal (lado DB9)
+cav_y0 = y_wall0                                        # início da cavidade (lado DB9): sem parede transversal
 cav_y1 = nes_front - end_wall                           # parede interna traseira (lado NES)
 cav_r = 0.3
 screw_x = cav_hw + wall / 2                                  # posição X dos parafusos (±), fora da cavidade
-pod_outer_x = screw_x + 3.6                             # borda externa dos "ombros" dos parafusos
 
 pcb_bot = floor_t + under_h                             # z da face de baixo da PCB
 pcb_top = pcb_bot + pcb_t                               # z da face de cima da PCB
