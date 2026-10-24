@@ -3,24 +3,29 @@ Case sob medida para um adaptador NES -> Phantom System / Top Game / Turbo Game 
 PRONTO (Shopee). NÃO é a PCB deste repositório: veja o README desta pasta.
 
 Mesmo projeto da case do Geniecom (casca + placa do fundo, parafusos M3x8 nos cantos, batentes das
-orelhas do NES, nomes gravados no teto), com as medidas deste adaptador.
+orelhas do NES, nomes gravados no teto), com as medidas deste adaptador, e duas diferenças:
+  - O DB9 fica EXPOSTO, num berço aberto de paredes laterais retas (sem lombadas internas). O teto
+    começa logo atrás da borda de 2,16 mm da moldura do DB9, encostado nela, rente ao topo do DB9
+    (altura externa 20,2 mm) e com ~1,5 mm de espessura sobre o corpo. Só o DB9 e a PCB entram no console.
+  - Teto em degrau: a 6,5 mm do corpo do NES o teto sobe até 27,1 mm (a barra de plástico dos pinos do
+    NES passa sob a parede do degrau).
 
 Gera (CadQuery):
   ../stl/case_base.stl       placa do fundo (2 mm, com as abas das janelas), fundo na mesa
-  ../stl/case_lid.stl        casca (paredes + teto), orientada para impressão (virada, teto na mesa)
+  ../stl/case_lid.stl        casca (paredes + teto), virada, teto alto na mesa (o teto baixo leva suporte)
   ../stl/case_assembly.stl   conjunto montado (só para conferência visual)
   case_base.step, case_lid.step, case_assembly.step   (importar no Fusion)
 
 Uso:  pip install cadquery   &&   python case_phantom_3rdparty.py
 
 Sistema de coordenadas do modelo (mm):
-  X = largura da PCB (33,11 mm), 0 = centro da PCB
+  X = largura da PCB (32,26 mm), 0 = centro da PCB
   Y = comprimento, 0 = borda da PCB do lado do DB9, +Y aponta para o NES
   Z = altura, 0 = fundo externo da placa
 
 Medidas dos conectores e da PCB do adaptador (largura, comprimento, espessura): paquímetro.
-Não há arquivo de layout desta PCB. A folga do DB9 (db9_clear) não foi testada: o teste de encaixe
-do DB9 não vale aqui, porque a PCB é mais grossa.
+Não há arquivo de layout desta PCB. A altura e a profundidade do corpo do DB9 atrás da moldura
+(db9_body_h, db9_body_d) foram lidas em fotos: conferir com paquímetro se a case for refeita.
 """
 import math
 import os
@@ -37,8 +42,10 @@ pcb_t = 1.65            # espessura da PCB do adaptador comprado (medida)
 
 # --- Conector DB9 fêmea ângulo reto (footprint do EasyEDA) ---
 db9_body_w = 30.95      # largura da moldura do DB9 (X), medida com paquímetro (30,93)
-db9_body_d = 12.5       # profundidade do corpo sobre a PCB (Y, de 0 a 12.5)
-db9_h = 13.99 - pcb_t   # DB9 acima da PCB: 13,99 mm no total (DB9 + PCB, medido neste adaptador) = 12,34 mm
+db9_body_d = 12.5       # profundidade do corpo do DB9 (Y), do footprint (só define a posição dos parafusos da case)
+db9_body_h = 10.8       # altura do corpo do DB9 acima da PCB, atrás da moldura (lida na foto IMG_1670): o teto encosta nele
+db9_plate_d = 2.16      # borda da frente da moldura do DB9 (medida): o teto começa atrás dela e encosta nela
+db9_h = 13.95 - pcb_t   # DB9 acima da PCB: 13,95 mm no total (DB9 + PCB, medido neste adaptador) = 12,30 mm
 db9_shell_out = 6.0     # quanto a carcaça D + porcas de trava saem além da borda da PCB
 db9_axis_h = 5.9        # altura do eixo da carcaça D acima da PCB (MEDIDO: borda de baixo 2,68 e de cima 9,1 -> centro 5,9)
 db9_screw_x = 12.5      # posição X dos parafusos de fixação do DB9 (±)
@@ -56,8 +63,10 @@ under_h = 4.25          # espaço livre sob a PCB (suporte medido: 3,75 mm abaix
 
 # --- Case ---
 wall = 6.5              # parede lateral
-db9_protrusion = 0.3    # a moldura do DB9 sai 0,3 mm além da face da case: nenhum mm de encaixe é perdido, mesmo com a folga da PCB (-0,2 a +0,17 mm)
-end_wall = 1.6          # parede frontal/traseira (a moldura do DB9 e a face do NES ficam rentes à face externa)
+db9_back_gap = 0.0      # (não usado: o teto começa na borda da moldura do DB9)
+db9_protrusion = 0.3    # o berço termina 0,3 mm atrás da moldura do DB9
+end_wall = 1.6          # parede traseira e do degrau (a face do NES fica rente à face externa)
+front_wall = 0.0       # sem parede transversal: o berço é aberto na frente e o teto encosta na moldura do DB9
 floor_t = 2.0           # fundo da base
 roof_t = 2.0            # teto da casca
 side_gap = 0.35         # folga lateral PCB/conectores <-> parede
@@ -72,9 +81,9 @@ label_depth = 0.4       # profundidade da gravação
 label_margin = 8.0      # distância do texto até a face de cada ponta
 
 # --- Degrau do teto: a parte do DB9 tem só a altura da moldura do DB9; a do NES é mais alta ---
-step_gap = 0.2          # folga entre a face interna do degrau e o corpo do NES
+step_gap = 6.5          # folga entre a face interna do degrau e o corpo do NES (validada: a barra de pinos do NES passa e o NES desce até o fim)
 
-# --- Janelas: moldura do DB9 e face do NES ficam rentes às faces da case ---
+# --- Janelas: a face do NES fica rente à face da case; o DB9 fica fora, só o rasgo da PCB ---
 pcb_slot_clear = 0.1    # folga do rasgo da PCB na parede frontal
 
 # --- Parafusos M3 autorroscantes, cabeça escareada (kit Zmbroll) ---
@@ -82,7 +91,7 @@ screw_clear_d = 3.4     # furo passante na base
 screw_head_d = 4.94     # diâmetro da cabeça escareada do M3×8 (medido com paquímetro)
 screw_pilot_d = 2.6     # furo-piloto na casca (autorroscante)
 screw_pilot_depth = 7.0 # profundidade do furo-piloto
-screw_ys = (db9_protrusion + 6.5, nes_front - 6.5) # posições Y (região livre entre os dois conectores)
+screw_ys = (db9_body_d + 6.5, nes_front - 6.5) # posições Y (região livre entre a face e o NES)
 pod_r = 2.0
 
 # --- Apoio da PCB ---
@@ -94,7 +103,9 @@ ear_gap = 0.15         # folga (em Y) entre as orelhas do NES e os batentes da c
 # DERIVADOS
 # ============================================================
 cav_hw = max(pcb_w, db9_body_w) / 2 + side_gap          # meia-largura da cavidade
-cav_y0 = db9_protrusion + end_wall                      # parede interna frontal (lado DB9)
+y_wall0 = db9_plate_d                                    # o teto começa atrás da borda da moldura do DB9 e encosta nela; cobre o corpo atrás dela
+out_y0 = db9_protrusion                                 # face externa frontal do berço do DB9
+cav_y0 = y_wall0 + front_wall                            # parede interna frontal (lado DB9)
 cav_y1 = nes_front - end_wall                           # parede interna traseira (lado NES)
 cav_r = 0.3
 screw_x = cav_hw + wall / 2                                  # posição X dos parafusos (±), fora da cavidade
@@ -105,12 +116,11 @@ pcb_top = pcb_bot + pcb_t                               # z da face de cima da P
 split_z = floor_t                                       # plano de separação: placa do fundo / casca
 cav_top = pcb_top + max(nes_h, db9_h) + top_gap         # teto interno da parte alta (NES)
 total_h = cav_top + roof_t
-cav_top_low = pcb_top + db9_h + top_gap                 # teto interno da parte baixa (DB9)
-total_low = cav_top_low + roof_t
+total_low = pcb_top + db9_h                             # teto externo da parte baixa: rente ao topo do DB9
+cav_top_low = pcb_top + db9_body_h                      # o teto baixo encosta no topo do corpo do DB9 (teto de ~1,5 mm, rente à moldura)
 
 ear_y0, ear_y1 = nes_front - 5.32, nes_front - 3.22     # orelhas do NES (footprint), medidas a partir da face do NES
 out_hw = cav_hw + wall
-out_y0 = db9_protrusion                                 # face externa frontal (a moldura do DB9, em y = 0, sai db9_protrusion além dela)
 out_y1 = nes_front                                      # face externa traseira = face do NES
 y_step_in = nes_front - nes_body_d - step_gap           # face interna do degrau (começa a parte alta da cavidade)
 y_step_out = y_step_in - end_wall                       # face externa do degrau
@@ -162,7 +172,7 @@ base = outer.intersect(base_zone).cut(cavity)
 # apoios da PCB (sob a placa, nas bordas laterais, longe de pinos e parafusos)
 sx_in = cav_hw - support_w                      # blocos encostam na parede lateral
 supports_y = [
-    (cav_y0 + 0.3, cav_y0 + 0.3 + support_w),   # lado DB9 (0,3 = raio do canto da cavidade)
+    (cav_y0 + 0.3, cav_y0 + 0.3 + support_w),   # lado DB9, na frente dos parafusos do DB9 (que ficam em y 6,5 a 12,5)
     (pcb_l - support_w, pcb_l),                 # lado NES
 ]
 for s in (-1, 1):
@@ -195,12 +205,10 @@ for s in (-1, 1):
     # batente traseiro das orelhas: segura a PCB contra o empurrão do plugue do joystick no DB9
     lid = lid.union(box(xa, xb, ear_y1 + ear_gap, cav_y1 + 0.01, pcb_top + hold_gap, cav_top + 0.01))
 
-# textos gravados nos tetos, cada nome lê-se do lado do seu conector:
-# "PHANTOM" no teto baixo (lado do DB9; esse teto imprime sobre suporte, então a superfície fica mais áspera)
-# e "NES" no teto alto (lado do NES)
-for _txt, _y, _z in (("PHANTOM", out_y0 + label_margin + 2.2, total_low),
-                     ("NES", out_y1 - label_margin - 2.2, total_h)):
-    _t = (cq.Workplane("XY").workplane(offset=_z - label_depth)
+# textos gravados no teto alto (liso: assenta na mesa ao imprimir), cada nome lê-se do lado do seu conector:
+# "PHANTOM" do lado do DB9 e "NES" do lado do NES
+for _txt, _y in (("PHANTOM", y_step_out + 4.6), ("NES", out_y1 - 5.5)):
+    _t = (cq.Workplane("XY").workplane(offset=total_h - label_depth)
           .center(0, _y).text(_txt, label_size, label_depth + 0.2, kind="bold", halign="center", valign="center"))
     if _txt == "NES":
         _t = _t.rotate((0, _y, 0), (0, _y, 1), 180)   # NES lê-se do lado do seu conector (de cabeça para baixo em relação ao PHANTOM)
@@ -212,27 +220,27 @@ for s in (-1, 1):
         lid = lid.cut(cyl(s * screw_x, y, split_z - 0.5, split_z + screw_pilot_depth, screw_pilot_d))
 
 # --- Janelas ---
-# DB9: a moldura entra na parede frontal e fica com a face rente à face da case;
-#      a carcaça D sai inteira para fora (encaixe completo no console).
-y_f0, y_f1 = out_y0 - 1.0, cav_y0 + 0.01
+# DB9: fica exposto, fora da case (a face da case encosta na traseira do corpo dele).
+#      A PCB atravessa a parede frontal por um rasgo aberto até a placa do fundo (a PCB entra por baixo).
+y_f0, y_f1 = y_wall0 - 1.0, cav_y0 + 0.01
 pcb_slot = box(-(pcb_w / 2 + pcb_slot_clear), pcb_w / 2 + pcb_slot_clear, y_f0, y_f1,
-               pcb_bot - pcb_slot_clear, pcb_top + 0.01)
-db9_clear = 0.15  # folga do DB9 (NÃO testada: o teste de encaixe impresso não vale aqui, a PCB é mais grossa)
-db9_win = box(-(db9_body_w / 2 + db9_clear), db9_body_w / 2 + db9_clear, y_f0, y_f1,
-              split_z, pcb_top + db9_h + db9_clear)
+               split_z, pcb_top + 0.01)
 y_b0, y_b1 = cav_y1 - 0.01, out_y1 + 1.0
 nes_r = 2.0      # raio dos 4 cantos do corpo do NES (medido nas fotos, ~2 mm)
 nes_clear = 0.05 # folga do NES (validada no teste de encaixe impresso: 1 furo = 0,05 mm, encaixa justo)
 nes_win = box(-(nes_body_w / 2 + nes_clear), nes_body_w / 2 + nes_clear, y_b0, y_b1,
               split_z, pcb_top + nes_h + nes_clear)
 nes_win = nes_win.edges("|Y").edges(">Z").fillet(nes_r + nes_clear)  # cantos de cima boleados
-# as janelas descem até a placa: a casca não tem ponte na impressão. Só a casca é recortada;
-# as abas da placa (abaixo) tapam o vão sob os conectores.
-for w in (pcb_slot, db9_win, nes_win):
+# o rasgo e a janela do NES descem até a placa: a casca não tem ponte na impressão. Só a casca é recortada;
+# as abas da placa (abaixo) tapam o vão sob o NES.
+# berço do DB9: paredes retas, na largura do rasgo da PCB (sem batente/lombada interna na lateral):
+# o corpo do DB9 fica com folga de ~0,75 mm de cada lado e continua exposto por cima.
+cradle = box(-(pcb_w / 2 + pcb_slot_clear), pcb_w / 2 + pcb_slot_clear, out_y0 - 1.0, y_wall0,
+             split_z, total_h + 1.0)
+for w in (pcb_slot, nes_win, cradle):
     lid = lid.cut(w)
 lip_clear = 0.15
-base = base.union(box(-(db9_body_w / 2 + db9_clear - lip_clear), db9_body_w / 2 + db9_clear - lip_clear,
-                      out_y0, cav_y0 + 0.01, floor_t - 0.01, pcb_bot - pcb_slot_clear))
+# (sem aba sob a PCB na frente: o teto começa na borda da moldura e não há parede transversal)
 base = base.union(box(-(nes_body_w / 2 + nes_clear - lip_clear), nes_body_w / 2 + nes_clear - lip_clear,
                       cav_y1 - 0.01, out_y1, floor_t - 0.01, pcb_top - 0.05))
 # enchimentos dos cantos de baixo: o conector tem os 4 cantos boleados, então a aba sobe junto
@@ -248,12 +256,12 @@ base = base.union(_pad)
 # ============================================================
 envelopes = {
     "PCB": box(-pcb_w / 2, pcb_w / 2, 0, pcb_l, pcb_bot, pcb_top),
-    "DB9 corpo": box(-db9_body_w / 2, db9_body_w / 2, 0, db9_body_d, pcb_top, pcb_top + db9_h),
+    "DB9 corpo": box(-db9_body_w / 2, db9_body_w / 2, 0, db9_body_d, pcb_top, pcb_top + db9_body_h),
     "DB9 carcaca+porcas (fora da case)": box(-db9_screw_x - 2.1, db9_screw_x + 2.1, -db9_shell_out, 0,
                               zc - 4.5, zc + 4.5),
     "NES corpo": box(-nes_body_w / 2, nes_body_w / 2, nes_body_y0, nes_front, pcb_top, pcb_top + nes_h).edges("|Y").fillet(nes_r),
     "NES orelhas": box(-15.1, 15.1, ear_y0, ear_y1, pcb_top, pcb_top + 8),
-    "pinos sob PCB": box(-9, 9, 6, 28, pcb_bot - 2.0, pcb_bot),
+    "pinos sob PCB": box(-9, 9, cav_y0 + 0.1, 28, pcb_bot - 2.0, pcb_bot),
     "parafusos DB9 sob PCB": cyl(-db9_screw_x, db9_screw_y, pcb_bot - 2.5, pcb_bot, 6.0)
     .union(cyl(db9_screw_x, db9_screw_y, pcb_bot - 2.5, pcb_bot, 6.0)),
     "pegs NES sob PCB": cyl(-10.25, pcb_l - 2.6, pcb_bot - 3.75, pcb_bot, 2.4)
@@ -276,7 +284,7 @@ here = os.path.dirname(os.path.abspath(__file__))
 stl_dir = os.path.normpath(os.path.join(here, "..", "stl"))
 os.makedirs(stl_dir, exist_ok=True)
 
-# tampa virada para imprimir com o teto na mesa
+# casca virada para imprimir com o teto na mesa (o teto baixo, do lado do DB9, fica no ar e leva suporte)
 lid_print = lid.rotate((0, 0, 0), (1, 0, 0), 180)
 lb = lid_print.val().BoundingBox()
 lid_print = lid_print.translate((0, 0, -lb.zmin))
