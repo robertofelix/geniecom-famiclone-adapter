@@ -1,6 +1,6 @@
 """
 Case sob medida para a PCB do adaptador NES -> Phantom System / Top Game / Turbo Game (hardware/gerber_phantom.zip).
-Mesmo projeto da case do phantom-3rdparty (impressa e validada no console Phantom System), com as dimensões
+Mesmo desenho de fecho da case do Geniecom e mesmo desenho de DB9 exposto e teto em degrau já impressos e validados no console Phantom System, com as dimensões
 desta PCB (31,2 x 35,8 x 1,26 mm):
   - O DB9 fica EXPOSTO: o berço tem paredes laterais retas (sem lombadas internas) e o teto começa logo atrás
     da borda de 2,16 mm da moldura do DB9, encostado nela. Só o DB9 e a PCB entram no console.
@@ -21,7 +21,7 @@ Sistema de coordenadas do modelo (mm):
   Z = altura, 0 = fundo externo da base
 
 Dimensões da PCB e posições dos conectores: layout em hardware/easyeda/phantom_pcb.json (Gerber, fidedigno).
-Larguras e alturas dos conectores: paquímetro (os mesmos do Geniecom e do phantom-3rdparty).
+Larguras e alturas dos conectores: paquímetro (os mesmos do Geniecom).
 """
 import os
 
@@ -73,7 +73,7 @@ label_size = 6.0        # tamanho da fonte (altura das maiúsculas ~4,5 mm)
 label_depth = 0.4       # profundidade da gravação
 
 # --- Degrau do teto: a parte do DB9 tem só a altura da moldura do DB9; a do NES é mais alta ---
-step_gap = 6.5          # folga entre a face interna do degrau e o corpo do NES (validada no phantom-3rdparty: a barra de pinos do NES passa e o NES desce até o fim)
+step_gap = 6.5          # folga entre a face interna do degrau e o corpo do NES (validada em impressão: a barra de pinos do NES passa e o NES desce até o fim)
 
 # --- Janelas: a face do NES fica rente à face da case; o DB9 fica no berço aberto, só o rasgo da PCB ---
 pcb_slot_clear = 0.1    # folga do rasgo da PCB na parede frontal
@@ -230,7 +230,10 @@ cradle = box(-(pcb_w / 2 + pcb_slot_clear), pcb_w / 2 + pcb_slot_clear, out_y0 -
 for w in (pcb_slot, nes_win, cradle):
     lid = lid.cut(w)
 lip_clear = 0.15
-# (sem aba sob a PCB na frente: o teto começa na borda da moldura e não há parede transversal)
+# aba sob a PCB, na frente: fecha o vão entre a base e a PCB (4,25 mm) na ponta do DB9, na largura do rasgo da PCB.
+# Fica antes dos parafusos do DB9 sob a PCB (y 6,5 a 12,5) e dos apoios laterais.
+base = base.union(box(-(pcb_w / 2 + pcb_slot_clear - lip_clear), pcb_w / 2 + pcb_slot_clear - lip_clear,
+                      out_y0, cav_y0 + 0.3, floor_t - 0.01, pcb_bot - pcb_slot_clear))
 base = base.union(box(-(nes_body_w / 2 + nes_clear - lip_clear), nes_body_w / 2 + nes_clear - lip_clear,
                       cav_y1 - 0.01, out_y1, floor_t - 0.01, pcb_top - 0.05))
 # enchimentos dos cantos de baixo: o conector tem os 4 cantos boleados, então a aba sobe junto
@@ -251,7 +254,7 @@ envelopes = {
                               zc - 4.5, zc + 4.5),
     "NES corpo": box(-nes_body_w / 2, nes_body_w / 2, nes_body_y0, nes_front, pcb_top, pcb_top + nes_h).edges("|Y").fillet(nes_r),
     "NES orelhas": box(-15.1, 15.1, ear_y0, ear_y1, pcb_top, pcb_top + 8),
-    "pinos sob PCB": box(-9, 9, cav_y0 + 0.1, 28, pcb_bot - 2.0, pcb_bot),
+    "pinos sob PCB": box(-9, 9, 6, 28, pcb_bot - 2.0, pcb_bot),
     "parafusos DB9 sob PCB": cyl(-db9_screw_x, db9_screw_y, pcb_bot - 2.5, pcb_bot, 6.0)
     .union(cyl(db9_screw_x, db9_screw_y, pcb_bot - 2.5, pcb_bot, 6.0)),
     "pegs NES sob PCB": cyl(-10.25, pcb_l - 2.6, pcb_bot - 3.75, pcb_bot, 2.4)

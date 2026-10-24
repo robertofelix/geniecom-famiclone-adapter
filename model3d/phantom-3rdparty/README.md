@@ -47,6 +47,7 @@ Mesmo desenho da [case do Geniecom](../geniecom) (casco e placa de fundo de 2 mm
 Outros detalhes:
 
 - **Batentes das orelhas do NES:** a PCB não recua quando se empurra o plugue do DB9.
+- **Aba sob a PCB:** a base tem uma aba na frente (y = 0,3 a 2,5 mm) que fecha o vão sob a PCB, antes dos parafusos do DB9.
 - **Apoios da PCB na base:** blocos nas laterais, sob a PCB, dos dois lados. Do lado do DB9 ficam na frente dos parafusos de fixação do DB9 (que ficam sob a PCB, em y = 6,5 a 12,5 mm).
 - **Nomes gravados no teto alto** (baixo relevo, 6 mm): "PHANTOM" e "NES", cada um lido a partir do lado do seu conector.
 - **Tamanho externo:** 46,0 × 42,2 mm, com 20,2 mm de altura na parte do DB9 e 27,1 mm na do NES (cavidade de 33,0 × 38,7 mm).
@@ -64,6 +65,6 @@ Para regenerar: `python model3d/phantom-3rdparty/autodeskfusion/case_phantom_3rd
 
 ## Status
 
-Validada no console Phantom System: o casco impresso com estes parâmetros encaixou no adaptador e no console, e o NES desce até o fim. A `case_base.stl` desta pasta foi regerada depois da impressão do casco (apoios da PCB do lado do DB9 na frente dos parafusos do DB9, sem a aba fina sob a PCB). Geometria: malhas fechadas e interferência 0,000 mm³ com os envelopes dos conectores.
+Validada no console Phantom System: o casco e a base impressos com estes parâmetros encaixaram no adaptador e no console, e o NES desce até o fim. A base tem apoios da PCB do lado do DB9 na frente dos parafusos do DB9 e uma aba sob a PCB, na ponta do DB9, que fecha o vão de 4,25 mm entre a base e a PCB. Geometria: malhas fechadas e interferência 0,000 mm³ com os envelopes dos conectores.
 
 Se a case for refeita, conferir com paquímetro a altura e a profundidade do corpo do DB9 atrás da moldura (`db9_body_h` e `db9_body_d`): o teto encosta nele. A posição das soldas do DB9 vem da foto do verso e é aproximada.
